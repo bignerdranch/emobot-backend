@@ -42,4 +42,20 @@ drop.get("/kudos/stats/from") { req in
     ])
 }
 
+drop.get("/kudos/stats/to") { req in
+    return JSON([
+        "meta": ["static": true],
+        "data": [
+            [
+                "to": "jjustice",
+                "value-points": [
+                    "brilliant": 3,
+                    "kind": 1,
+                    "hardworking": 0,
+                ]
+            ]
+        ]
+        ])
+}
+
 drop.run()
