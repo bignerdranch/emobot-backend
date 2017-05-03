@@ -12,15 +12,17 @@ drop.get("/kudos") { req in
     return JSON([
         "meta": ["static": true],
         "data": [
-            "from": "jjustice",
-            "to": "caitlin",
-            "description": "for client wrangling",
-            "channel": "caption-call-internal",
-            "date": "2015-03-25T12:00:00Z",
-            "value-points": [
-                "brilliant": 3,
-                "kind": 1,
-                "hardworking": 0,
+            [
+                "from": "jjustice",
+                "to": "caitlin",
+                "description": "for client wrangling",
+                "channel": "caption-call-internal",
+                "date": "2015-03-25T12:00:00Z",
+                "value-points": [
+                    "brilliant": 3,
+                    "kind": 1,
+                    "hardworking": 0,
+                ],
             ],
         ],
     ])
