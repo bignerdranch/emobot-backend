@@ -18,7 +18,7 @@ drop.get("/kudos") { req in
                 "description": "for client wrangling",
                 "channel": "caption-call-internal",
                 "date": "2015-03-25T12:00:00Z",
-                "value-points": [
+                "value_points": [
                     "brilliant": 3,
                     "kind": 1,
                     "hardworking": 0,
@@ -34,7 +34,7 @@ drop.get("/kudos/stats/from") { req in
         "data": [
             [
                 "from": "jjustice",
-                "value-points": [
+                "value_points": [
                     "brilliant": 3,
                     "kind": 1,
                     "hardworking": 0,
@@ -50,7 +50,7 @@ drop.get("/kudos/stats/to") { req in
         "data": [
             [
                 "to": "jjustice",
-                "value-points": [
+                "value_points": [
                     "brilliant": 3,
                     "kind": 1,
                     "hardworking": 0,
