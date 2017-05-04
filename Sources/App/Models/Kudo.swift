@@ -11,13 +11,13 @@ final class Kudo: Model {
     var channel: String
     var dateSent: String
     
-    init(from: String, to: String, description: String, channel: String, date: String) {
+    init(fromUser: String, toUser: String, description: String, channel: String, dateSent: String) {
         self.id = UUID().uuidString.makeNode()
-        self.fromUser = from
-        self.toUser = to
+        self.fromUser = fromUser
+        self.toUser = toUser
         self.description = description
         self.channel = channel
-        self.dateSent = date
+        self.dateSent = dateSent
     }
 
     init(node: Node, in context: Context) throws {
