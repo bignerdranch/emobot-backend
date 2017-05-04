@@ -63,7 +63,7 @@ class Bot {
                         return
                     }
                     
-                    let kudoRegex = try Regex(pattern: "(\\w+)\\+\\+\\s+(.*)")
+                    let kudoRegex = try Regex(pattern: "(\\w+)\\+\\+\\s+(.*)", options: [])
                     if let match = kudoRegex.actuallyUsableMatch(in: text) {
                         let toUser = match.captures[0]
                         let description = match.captures[1]
@@ -102,7 +102,7 @@ class Bot {
 
 extension Regex {
     func actuallyUsableMatch(in string: String) -> (fullMatch: String, captures: [String])? {
-        let nsString = string as NSString
+        let nsString = NSString(string: string)
         let range = NSMakeRange(0, nsString.length)
         guard let match = firstMatch(in: string, range: range) else {
             return nil
