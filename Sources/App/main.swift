@@ -2,6 +2,8 @@ import Vapor
 
 let drop = Droplet()
 
+drop.middleware.insert(CORSMiddleware(), at: 0)
+
 drop.get { req in
     return try drop.view.make("welcome", [
     	"message": drop.localization[req.lang, "welcome", "title"]
