@@ -26,41 +26,62 @@ drop.get("/leaderboard") { req in
             "overall": [
                 [
                     "rank": 1,
-                    "user": "caitlin",
+                    "user": [
+                        "user_name": "caitlin",
+                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                    ],
                     "points": 442,
                 ],
                 [
                     "rank": 2,
-                    "user": "kristin",
-                    "points": 327,
+                    "user": [
+                        "user_name": "kristin",
+                        "avatar": "https://cdn.example.com/kristin_192.jpg",
                     ],
+                    "points": 327,
+                ],
                 [
                     "rank": 3,
-                    "user": "jjustice",
+                    "user": [
+                        "user_name": "jjustice",
+                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
+                    ],
                     "points": 213,
                 ],
             ],
             "brilliant": [
                 [
                     "rank": 1,
-                    "user": "kristin",
+                    "user": [
+                        "user_name": "kristin",
+                        "avatar": "https://cdn.example.com/kristin_192.jpg",
+                    ],
                     "points": 142,
                 ],
                 [
                     "rank": 2,
-                    "user": "caitlin",
+                    "user": [
+                        "user_name": "caitlin",
+                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                    ],
                     "points": 127,
                 ],
                 [
                     "rank": 3,
-                    "user": "jjustice",
+                    "user": [
+                        "user_name": "jjustice",
+                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
+                    ],
                     "points": 113,
                 ],
             ],
             "kind": [
                 [
                     "rank": 1,
-                    "user": "caitlin",
+                    "user": [
+                        "user_name": "caitlin",
+                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                    ],
                     "points": 142,
                 ],
                 [
@@ -70,24 +91,36 @@ drop.get("/leaderboard") { req in
                 ],
                 [
                     "rank": 3,
-                    "user": "jjustice",
+                    "user": [
+                        "user_name": "jjustice",
+                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
+                    ],
                     "points": 113,
                 ],
             ],
             "hardworking": [
                 [
                     "rank": 1,
-                    "user": "jjustice",
+                    "user": [
+                        "user_name": "jjustice",
+                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
+                    ],
                     "points": 142,
                 ],
                 [
                     "rank": 2,
-                    "user": "caitlin",
+                    "user": [
+                        "name": "caitlin",
+                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                    ],
                     "points": 127,
                 ],
                 [
                     "rank": 3,
-                    "user": "kristin",
+                    "user": [
+                        "user_name": "kristin",
+                        "avatar": "https://cdn.example.com/kristin_192.jpg",
+                    ],
                     "points": 113,
                 ],
             ],
@@ -102,8 +135,14 @@ drop.get("users", String.self) { request, username in
             "kudos": [
                 "sent": [
                     [
-                        "from": "caitlin",
-                        "to": "kristin",
+                        "from": [
+                            "user_name": "caitlin",
+                            "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                        ],
+                        "to": [
+                            "user_name": "kristin",
+                            "avatar": "https://cdn.example.com/kristin_192.jpg",
+                        ],
                         "channel": "caption-call-internal",
                         "description": "great client call",
                         "value_points": [
@@ -113,8 +152,14 @@ drop.get("users", String.self) { request, username in
                         ]
                     ],
                     [
-                        "from": "caitlin",
-                        "to": "jjustice",
+                        "from": [
+                            "user_name": "caitlin",
+                            "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                        ],
+                        "to": [
+                            "user_name": "jjustice",
+                            "avatar": "https://cdn.example.com/jjustice_192.jpg",
+                        ],
                         "channel": "caption-call-internal",
                         "description": "great client call",
                         "value_points": [
@@ -126,8 +171,14 @@ drop.get("users", String.self) { request, username in
                 ],
                 "received": [
                     [
-                        "from": "kristin",
-                        "to": "caitlin",
+                        "from": [
+                            "user_name": "kristin",
+                            "avatar": "https://cdn.example.com/kristin_192.jpg",
+                        ],
+                        "to": [
+                            "user_name": "caitlin",
+                            "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                        ],
                         "channel": "caption-call-internal",
                         "description": "great client call",
                         "value_points": [
@@ -137,8 +188,14 @@ drop.get("users", String.self) { request, username in
                         ]
                     ],
                     [
-                        "from": "jjustice",
-                        "to": "caitlin",
+                        "from": [
+                            "user_name": "jjustice",
+                            "avatar": "https://cdn.example.com/jjustice_192.jpg",
+                        ],
+                        "to": [
+                            "user_name": "caitlin",
+                            "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                        ],
                         "channel": "caption-call-internal",
                         "description": "great client call",
                         "value_points": [
@@ -162,8 +219,14 @@ drop.get("values", String.self) { req, value in
             "emoji_alpha_code": "heart",
             "kudos": [
                 [
-                    "from": "kristin",
-                    "to": "caitlin",
+                    "from": [
+                        "user_name": "kristin",
+                        "avatar": "https://cdn.example.com/kristin_192.jpg",
+                    ],
+                    "to": [
+                        "user_name": "caitlin",
+                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                    ],
                     "channel": "caption-call-internal",
                     "description": "great client call",
                     "value_points": [
@@ -173,8 +236,14 @@ drop.get("values", String.self) { req, value in
                     ]
                 ],
                 [
-                    "from": "jjustice",
-                    "to": "caitlin",
+                    "from": [
+                        "user_name": "jjustice",
+                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
+                    ],
+                    "to": [
+                        "user_name": "caitlin",
+                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
+                    ],
                     "channel": "caption-call-internal",
                     "description": "great client call",
                     "value_points": [
