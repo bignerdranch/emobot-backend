@@ -12,6 +12,8 @@ guard let token = config["bot", "token"]?.string else { throw BotError.missingCo
 let dbProvider = try VaporPostgreSQL.Provider(config: config)
 let db = Database(dbProvider.driver)
 Kudo.database = db
+Reaction.database = db
+Value.database = db
 
 let bot = Bot(token: token)
 try bot.run()
