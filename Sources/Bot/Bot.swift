@@ -1,10 +1,24 @@
 import Foundation
 import HTTP
+import Models
 import Vapor
 
 class Bot {
     let token: String
     let webClient: SlackWebClient
+    
+    private let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .iso8601)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.timeZone = TimeZone(secondsFromGMT: 0)
+        f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        return f
+    }()
+    
+    private func now() -> String {
+        return dateFormatter.string(from: Date())
+    }
     
     private func webSocketURL() throws -> String {
         let rtmResponse = try BasicClient.loadRealtimeApi(token: token)
@@ -53,6 +67,8 @@ class Bot {
                                 return
                         }
 
+                        var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel, dateSent: self.now())
+                        try kudo.save()
                         
                         let response = SlackMessage(to: channelID, text: "\(fromUser) sent kudos to \(toUser) in \(channel): \(description)")
                         try ws.send(response)
