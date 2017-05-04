@@ -1,6 +1,13 @@
 import Vapor
+import VaporPostgreSQL
 
 let drop = Droplet()
+
+do {
+    try drop.addProvider(VaporPostgreSQL.Provider.self)
+} catch {
+    preconditionFailure("Error adding provider: \(error)")
+}
 
 drop.middleware.insert(CORSMiddleware(), at: 0)
 
