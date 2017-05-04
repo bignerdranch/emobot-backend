@@ -7,7 +7,7 @@ let workingDirectory = "./"
 #else
 let workingDirectory: String = {
     let parent = #file.characters.split(separator: "/").map(String.init).dropLast().joined(separator: "/")
-    let path = "/\(parent)/../" // needs to be directly under Sources
+    let path = "/\(parent)/../../" // needs to be directly under App
     return path
 }()
 #endif
