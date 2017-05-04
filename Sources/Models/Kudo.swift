@@ -41,9 +41,17 @@ public final class Kudo: Model {
 }
 
 public extension Kudo {
-    // TODO: reactions by value, reaction counts by value
     func reactions() throws -> [Reaction] {
         return try children(nil, Reaction.self).all()
+    }
+    
+    func reactionCountsByValue() throws -> [Value: Int] {
+        let reactions = try self.reactions()
+        var reactionCountsByValue: [Value: Int] = [:]
+        for value in try Value.all() {
+            reactionCountsByValue[value] = reactions.filter({ $0.valueID == value.id }).count
+        }
+        return reactionCountsByValue
     }
 }
 

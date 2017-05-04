@@ -36,6 +36,22 @@ public final class Value: Model {
     }
 }
 
+extension Value: Hashable, Equatable {
+    public var hashValue: Int {
+        return name.hashValue ^
+            slug.hashValue ^
+            emojiCharacter.hashValue ^
+            emojiAlphaCode.hashValue
+    }
+    
+    public static func ==(lhs: Value, rhs: Value) -> Bool {
+        return lhs.name == rhs.name &&
+            lhs.slug == rhs.slug &&
+            lhs.emojiCharacter == rhs.emojiCharacter &&
+            lhs.emojiAlphaCode == rhs.emojiAlphaCode
+    }
+}
+
 public extension Value {
     func reactions() throws -> [Reaction] {
         return try children(nil, Reaction.self).all()

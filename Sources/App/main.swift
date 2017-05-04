@@ -217,49 +217,44 @@ drop.get("users", String.self) { request, username in
     ])
 }
 
-drop.get("values", String.self) { req, value in
+drop.get("values", String.self) { req, valueSlug in
+    // TODO: create a slug field
+    // TODO: dynamic profile image field
+    guard let value = try Value.query().filter("slug", valueSlug).first() else {
+        return "KUDO NOT FOUND"
+    }
+    
+    let kudos = try value.reactions().map({ try $0.kudo() })
+    let kudoJSONs = try kudos.map({ (kudo: Kudo) -> JSON in
+        
+        var reactionCountsByValueSlug: [String: Int] = [:]
+        for (value, count) in try kudo.reactionCountsByValue() {
+            reactionCountsByValueSlug[value.slug] = count
+        }
+        
+        return try JSON(node: [
+            "from": [
+                "user_name": kudo.fromUser.makeNode(),
+                "avatar": "https://cdn.example.com/example_192.jpg",
+            ],
+            "to": [
+                "user_name": kudo.toUser.makeNode(),
+                "avatar": "https://cdn.example.com/example_192.jpg",
+            ],
+            "channel": kudo.channel.makeNode(),
+            "description": kudo.description.makeNode(),
+            "value_points": reactionCountsByValueSlug.makeNode(),
+        ])
+    })
+    
     return JSON([
         "meta": ["static": false],
         "data": [
-            "name": "Kind",
-            "emoji_character": "❤️",
-            "emoji_alpha_code": "heart",
-            "kudos": [
-                [
-                    "from": [
-                        "user_name": "kristin",
-                        "avatar": "https://cdn.example.com/kristin_192.jpg",
-                    ],
-                    "to": [
-                        "user_name": "caitlin",
-                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                    ],
-                    "channel": "caption-call-internal",
-                    "description": "great client call",
-                    "value_points": [
-                        "brilliant": 3,
-                        "kind": 1,
-                        "hardworking": 0,
-                    ]
-                ],
-                [
-                    "from": [
-                        "user_name": "jjustice",
-                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
-                    ],
-                    "to": [
-                        "user_name": "caitlin",
-                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                    ],
-                    "channel": "caption-call-internal",
-                    "description": "great client call",
-                    "value_points": [
-                        "brilliant": 3,
-                        "kind": 1,
-                        "hardworking": 0,
-                    ]
-                ],
-            ],
+            "name": value.name.makeNode(),
+            "slug": value.slug.makeNode(),
+            "emoji_character": value.emojiCharacter.makeNode(),
+            "emoji_alpha_code": value.emojiAlphaCode.makeNode(),
+            "kudos": try kudoJSONs.makeNode(),
         ],
     ])
 }
