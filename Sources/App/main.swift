@@ -157,7 +157,8 @@ drop.get("values", String.self) { req, value in
     return JSON([
         "meta": ["static": false],
         "data": [
-            "name": "Kindness",
+            "name": "Kind",
+            "emoji_character": "❤️",
             "emoji_alpha_code": "heart",
             "kudos": [
                 [
