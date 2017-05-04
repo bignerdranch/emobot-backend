@@ -2,6 +2,7 @@ import Vapor
 import VaporPostgreSQL
 
 let drop = Droplet()
+drop.preparations.append(Kudo.self)
 
 do {
     try drop.addProvider(VaporPostgreSQL.Provider.self)
