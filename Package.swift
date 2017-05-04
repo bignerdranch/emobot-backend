@@ -3,7 +3,7 @@ import PackageDescription
 let package = Package(
     name: "emobot",
     targets: [
-        Target(name: "Api", dependencies: ["Models"]),
+        Target(name: "App", dependencies: ["Models"]),
         Target(name: "Bot", dependencies: ["Models"]),
         Target(name: "Models"),
     ],
