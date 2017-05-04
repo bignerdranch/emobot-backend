@@ -11,9 +11,6 @@ do {
     preconditionFailure("Error adding provider: \(error)")
 }
 
-let bot = try Bot()
-try bot.run()
-
 drop.middleware.insert(CORSMiddleware(), at: 0)
 
 drop.get { req in
