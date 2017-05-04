@@ -1,3 +1,4 @@
+import Models
 import Vapor
 import VaporPostgreSQL
 

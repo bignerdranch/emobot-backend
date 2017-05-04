@@ -2,15 +2,15 @@ import Vapor
 import Fluent
 import Foundation
 
-final class Reaction: Model {
-    var exists = false
-    var id: Node?
-    var kudoID: Node?
-    var valueID: Node?
-    var fromUser: String
-    var dateSent: String
+public final class Reaction: Model {
+    public var exists = false
+    public var id: Node?
+    public var kudoID: Node?
+    public var valueID: Node?
+    public var fromUser: String
+    public var dateSent: String
     
-    init(kudoID: Node? = nil, valueID: Node? = nil, fromUser: String, dateSent: String) {
+    public init(kudoID: Node? = nil, valueID: Node? = nil, fromUser: String, dateSent: String) {
         self.id = UUID().uuidString.makeNode()
         self.kudoID = kudoID
         self.valueID = valueID
@@ -18,7 +18,7 @@ final class Reaction: Model {
         self.dateSent = dateSent
     }
     
-    init(node: Node, in context: Context) throws {
+    public init(node: Node, in context: Context) throws {
         id = try node.extract("id")
         kudoID = try node.extract("kudo_id")
         valueID = try node.extract("value_id")
@@ -26,7 +26,7 @@ final class Reaction: Model {
         dateSent = try node.extract("date_sent")
     }
     
-    func makeNode(context: Context) throws -> Node {
+    public func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": id,
             "kudo_id": kudoID,
@@ -37,7 +37,7 @@ final class Reaction: Model {
     }
 }
 
-extension Reaction {
+public extension Reaction {
     func kudo() throws -> Kudo {
         guard let kudo = try parent(kudoID, nil, Kudo.self).get() else {
             preconditionFailure("Reaction's Kudo should not be nil")
@@ -54,7 +54,7 @@ extension Reaction {
 }
 
 extension Reaction: Preparation {
-    static func prepare(_ database: Database) throws {
+    public static func prepare(_ database: Database) throws {
         try database.create("reactions") { kudos in
             kudos.id()
             kudos.parent(Kudo.self, optional: false)
@@ -64,7 +64,7 @@ extension Reaction: Preparation {
         }
     }
     
-    static func revert(_ database: Database) throws {
+    public static func revert(_ database: Database) throws {
         try database.delete("reactions")
     }
 }
