@@ -95,6 +95,64 @@ drop.get("/leaderboard") { req in
     ])
 }
 
+drop.get("users", String.self) { request, username in
+    return JSON([
+        "meta": ["static": true],
+        "data": [
+            "kudos": [
+                "sent": [
+                    [
+                        "from": "caitlin",
+                        "to": "kristin",
+                        "channel": "caption-call-internal",
+                        "description": "great client call",
+                        "value_points": [
+                            "brilliant": 3,
+                            "kind": 1,
+                            "hardworking": 0,
+                        ]
+                    ],
+                    [
+                        "from": "caitlin",
+                        "to": "jjustice",
+                        "channel": "caption-call-internal",
+                        "description": "great client call",
+                        "value_points": [
+                            "brilliant": 3,
+                            "kind": 1,
+                            "hardworking": 0,
+                        ]
+                    ],
+                ],
+                "received": [
+                    [
+                        "from": "kristin",
+                        "to": "caitlin",
+                        "channel": "caption-call-internal",
+                        "description": "great client call",
+                        "value_points": [
+                            "brilliant": 3,
+                            "kind": 1,
+                            "hardworking": 0,
+                        ]
+                    ],
+                    [
+                        "from": "jjustice",
+                        "to": "caitlin",
+                        "channel": "caption-call-internal",
+                        "description": "great client call",
+                        "value_points": [
+                            "brilliant": 3,
+                            "kind": 1,
+                            "hardworking": 0,
+                        ]
+                    ],
+                ],
+            ],
+        ],
+    ])
+}
+
 drop.get("/kudos") { req in
     return JSON([
         "meta": ["static": false],
