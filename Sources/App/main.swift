@@ -153,6 +153,40 @@ drop.get("users", String.self) { request, username in
     ])
 }
 
+drop.get("values", String.self) { req, value in
+    return JSON([
+        "meta": ["static": false],
+        "data": [
+            "name": "Kindness",
+            "emoji_alpha_code": "heart",
+            "kudos": [
+                [
+                    "from": "kristin",
+                    "to": "caitlin",
+                    "channel": "caption-call-internal",
+                    "description": "great client call",
+                    "value_points": [
+                        "brilliant": 3,
+                        "kind": 1,
+                        "hardworking": 0,
+                    ]
+                ],
+                [
+                    "from": "jjustice",
+                    "to": "caitlin",
+                    "channel": "caption-call-internal",
+                    "description": "great client call",
+                    "value_points": [
+                        "brilliant": 3,
+                        "kind": 1,
+                        "hardworking": 0,
+                    ]
+                ],
+            ],
+        ],
+    ])
+}
+
 drop.get("/kudos") { req in
     return JSON([
         "meta": ["static": false],
