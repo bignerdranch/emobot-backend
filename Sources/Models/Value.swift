@@ -10,7 +10,6 @@ public final class Value: Model {
     public var emojiAlphaCode: String
     
     public init(name: String, emojiCharacter: String, emojiAlphaCode: String) {
-        self.id = UUID().uuidString.makeNode()
         self.name = name
         self.emojiCharacter = emojiCharacter
         self.emojiAlphaCode = emojiAlphaCode

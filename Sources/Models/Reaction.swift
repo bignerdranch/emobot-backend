@@ -11,7 +11,6 @@ public final class Reaction: Model {
     public var dateSent: String
     
     public init(kudoID: Node? = nil, valueID: Node? = nil, fromUser: String, dateSent: String) {
-        self.id = UUID().uuidString.makeNode()
         self.kudoID = kudoID
         self.valueID = valueID
         self.fromUser = fromUser

@@ -12,7 +12,6 @@ public final class Kudo: Model {
     public var dateSent: String
     
     public init(fromUser: String, toUser: String, description: String, channel: String, dateSent: String) {
-        self.id = UUID().uuidString.makeNode()
         self.fromUser = fromUser
         self.toUser = toUser
         self.description = description
