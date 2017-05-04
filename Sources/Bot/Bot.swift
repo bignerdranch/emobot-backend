@@ -4,6 +4,7 @@ import Vapor
 
 class Bot {
     let token: String
+    let webClient: SlackWebClient
     
     private func webSocketURL() throws -> String {
         let rtmResponse = try BasicClient.loadRealtimeApi(token: token)
@@ -13,6 +14,7 @@ class Bot {
     
     init(token: String) {
         self.token = token
+        self.webClient = SlackWebClient(token: token)
     }
     
     func run() throws {
@@ -25,17 +27,17 @@ class Bot {
                 
                 let event = try JSON(bytes: text.utf8.array)
                 guard
-                    let fromUser = event["user"]?.string,
-                    let channel = event["channel"]?.string,
+                    let fromUserID = event["user"]?.string,
+                    let channelID = event["channel"]?.string,
                     let text = event["text"]?.string
                     else { return }
 
                 if text.hasPrefix("hello") {
-                    let response = SlackMessage(to: channel, text: "Hi there 👋")
+                    let response = SlackMessage(to: channelID, text: "Hi there 👋")
                     try ws.send(response)
                     return
                 } else if text.hasPrefix("version") {
-                    let response = SlackMessage(to: channel, text: "Current Version: \(VERSION)")
+                    let response = SlackMessage(to: channelID, text: "Current Version: \(VERSION)")
                     try ws.send(response)
                     return
                 }
@@ -44,7 +46,10 @@ class Bot {
                 if let match = kudoRegex.actuallyUsableMatch(in: text) {
                     let toUser = match.captures[0]
                     let description = match.captures[1]
-                    let response = SlackMessage(to: channel, text: "\(fromUser) sent kudos to \(toUser) in \(channel) for \(description)")
+                    let channel = try self.webClient.getChannelName(forID: channelID)
+                    let fromUser = try self.webClient.getUserName(forID: fromUserID)
+
+                    let response = SlackMessage(to: channelID, text: "\(fromUser ?? "-") sent kudos to \(toUser) in \(channel ?? "-"): \(description)")
                     try ws.send(response)
                 }
             }
@@ -70,14 +75,5 @@ extension NSRegularExpression {
             captures.append(nsString.substring(with: match.rangeAt(i)))
         }
         return (fullMatch, captures)
-    }
-}
-
-extension Bot {
-    convenience init() throws {
-        let config = try Config(prioritized: [.directory(root: workingDirectory + "Config/secrets"),
-                                              .directory(root: workingDirectory + "Config/")])
-        guard let token = config["bot", "token"]?.string else { throw BotError.missingConfig }
-        self.init(token: token)
     }
 }
