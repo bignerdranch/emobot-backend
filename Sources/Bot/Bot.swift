@@ -25,32 +25,40 @@ class Bot {
             ws.onText = { ws, text in
                 print("[event] - \(text)")
                 
-                let event = try JSON(bytes: text.utf8.array)
-                guard
-                    let fromUserID = event["user"]?.string,
-                    let channelID = event["channel"]?.string,
-                    let text = event["text"]?.string
-                    else { return }
+                do {
+                    let event = try JSON(bytes: text.utf8.array)
+                    guard
+                        let fromUserID = event["user"]?.string,
+                        let channelID = event["channel"]?.string,
+                        let text = event["text"]?.string
+                        else { return }
 
-                if text.hasPrefix("hello") {
-                    let response = SlackMessage(to: channelID, text: "Hi there 👋")
-                    try ws.send(response)
-                    return
-                } else if text.hasPrefix("version") {
-                    let response = SlackMessage(to: channelID, text: "Current Version: \(VERSION)")
-                    try ws.send(response)
-                    return
-                }
-                
-                let kudoRegex = try NSRegularExpression(pattern: "(\\w+)\\+\\+\\s+(.*)")
-                if let match = kudoRegex.actuallyUsableMatch(in: text) {
-                    let toUser = match.captures[0]
-                    let description = match.captures[1]
-                    let channel = try self.webClient.getChannelName(forID: channelID)
-                    let fromUser = try self.webClient.getUserName(forID: fromUserID)
+                    if text.hasPrefix("hello") {
+                        let response = SlackMessage(to: channelID, text: "Hi there 👋")
+                        try ws.send(response)
+                        return
+                    } else if text.hasPrefix("version") {
+                        let response = SlackMessage(to: channelID, text: "Current Version: \(VERSION)")
+                        try ws.send(response)
+                        return
+                    }
+                    
+                    let kudoRegex = try NSRegularExpression(pattern: "(\\w+)\\+\\+\\s+(.*)")
+                    if let match = kudoRegex.actuallyUsableMatch(in: text) {
+                        let toUser = match.captures[0]
+                        let description = match.captures[1]
+                        guard
+                            let channel = try self.webClient.getChannelName(forID: channelID),
+                            let fromUser = try self.webClient.getUserName(forID: fromUserID) else {
+                                return
+                        }
 
-                    let response = SlackMessage(to: channelID, text: "\(fromUser ?? "-") sent kudos to \(toUser) in \(channel ?? "-"): \(description)")
-                    try ws.send(response)
+                        
+                        let response = SlackMessage(to: channelID, text: "\(fromUser) sent kudos to \(toUser) in \(channel): \(description)")
+                        try ws.send(response)
+                    }
+                } catch {
+                    print("Error: \(error)")
                 }
             }
             
