@@ -41,6 +41,13 @@ final class Kudo: Model {
     }
 }
 
+extension Kudo {
+    // TODO: reactions by value, reaction counts by value
+    func reactions() throws -> [Reaction] {
+        return try children(nil, Reaction.self).all()
+    }
+}
+
 extension Kudo: Preparation {
     static func prepare(_ database: Database) throws {
         try database.create("kudos") { kudos in

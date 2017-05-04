@@ -33,6 +33,12 @@ final class Value: Model {
     }
 }
 
+extension Value {
+    func reactions() throws -> [Reaction] {
+        return try children(nil, Reaction.self).all()
+    }
+}
+
 extension Value: Preparation {
     static func prepare(_ database: Database) throws {
         try database.create("values") { kudos in

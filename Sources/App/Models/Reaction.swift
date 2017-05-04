@@ -37,6 +37,22 @@ final class Reaction: Model {
     }
 }
 
+extension Reaction {
+    func kudo() throws -> Kudo {
+        guard let kudo = try parent(kudoID, nil, Kudo.self).get() else {
+            preconditionFailure("Reaction's Kudo should not be nil")
+        }
+        return kudo
+    }
+    
+    func value() throws -> Value {
+        guard let value = try parent(valueID, nil, Value.self).get() else {
+            preconditionFailure("Reaction's Value should not be nil")
+        }
+        return value
+    }
+}
+
 extension Reaction: Preparation {
     static func prepare(_ database: Database) throws {
         try database.create("reactions") { kudos in
