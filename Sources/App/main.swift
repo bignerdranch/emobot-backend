@@ -2,6 +2,7 @@ import Vapor
 import VaporPostgreSQL
 
 let drop = Droplet()
+drop.preparations.append(Value.self)
 drop.preparations.append(Kudo.self)
 
 do {
