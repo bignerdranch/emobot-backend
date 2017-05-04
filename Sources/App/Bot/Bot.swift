@@ -46,7 +46,8 @@ class Bot {
 
 extension Bot {
     convenience init() throws {
-        let config = try Config(prioritized: [.directory(root: workingDirectory + "Config/secrets")])
+        let config = try Config(prioritized: [.directory(root: workingDirectory + "Config/secrets"),
+                                              .directory(root: workingDirectory + "Config/")])
         guard let token = config["bot", "token"]?.string else { throw BotError.missingConfig }
         self.init(token: token)
     }
