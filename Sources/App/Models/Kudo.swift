@@ -3,6 +3,7 @@ import Fluent
 import Foundation
 
 final class Kudo: Model {
+    var exists = false
     var id: Node?
     var fromUser: String
     var toUser: String
