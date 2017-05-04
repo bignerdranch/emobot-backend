@@ -6,13 +6,13 @@ public class ValueSeeder {
             return
         }
         
-        var brilliant = Value(name: "Brilliant", emojiCharacter: "🎓", emojiAlphaCode: "mortar_board")
+        var brilliant = Value(name: "Brilliant", slug: "brilliant", emojiCharacter: "🎓", emojiAlphaCode: "mortar_board")
         try brilliant.save()
         
-        var kind = Value(name: "Kind", emojiCharacter: "❤️", emojiAlphaCode: "heart")
+        var kind = Value(name: "Kind", slug: "kind", emojiCharacter: "❤️", emojiAlphaCode: "heart")
         try kind.save()
         
-        var hardworking = Value(name: "Hardworking", emojiCharacter: "💪", emojiAlphaCode: "muscle")
+        var hardworking = Value(name: "Hardworking", slug: "hardworking", emojiCharacter: "💪", emojiAlphaCode: "muscle")
         try hardworking.save()
     }
     

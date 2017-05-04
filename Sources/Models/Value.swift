@@ -6,11 +6,13 @@ public final class Value: Model {
     public var exists = false
     public var id: Node?
     public var name: String
+    public var slug: String
     public var emojiCharacter: String
     public var emojiAlphaCode: String
     
-    public init(name: String, emojiCharacter: String, emojiAlphaCode: String) {
+    public init(name: String, slug: String, emojiCharacter: String, emojiAlphaCode: String) {
         self.name = name
+        self.slug = slug
         self.emojiCharacter = emojiCharacter
         self.emojiAlphaCode = emojiAlphaCode
     }
@@ -18,6 +20,7 @@ public final class Value: Model {
     public init(node: Node, in context: Context) throws {
         id = try node.extract("id")
         name = try node.extract("name")
+        slug = try node.extract("slug")
         emojiCharacter = try node.extract("emoji_character")
         emojiAlphaCode = try node.extract("emoji_alpha_code")
     }
@@ -26,6 +29,7 @@ public final class Value: Model {
         return try Node(node: [
             "id": id,
             "name": name,
+            "slug": slug,
             "emoji_character": emojiCharacter,
             "emoji_alpha_code": emojiAlphaCode,
         ])
@@ -43,6 +47,7 @@ extension Value: Preparation {
         try database.create("values") { kudos in
             kudos.id()
             kudos.string("name")
+            kudos.string("slug")
             kudos.string("emoji_character")
             kudos.string("emoji_alpha_code")
         }
