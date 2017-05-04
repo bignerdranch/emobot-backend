@@ -187,6 +187,44 @@ drop.get("values", String.self) { req, value in
     ])
 }
 
+drop.get("progress") { req in
+    return JSON([
+        "meta": ["static": true],
+        "data": [
+            [
+                "year": 2017,
+                "week": 3,
+                "value_points": [
+                    "overall": 882,
+                    "brilliant": 342,
+                    "kind": 227,
+                    "hardworking": 313,
+                ],
+                ],
+            [
+                "year": 2017,
+                "week": 2,
+                "value_points": [
+                    "overall": 682,
+                    "brilliant": 342,
+                    "kind": 227,
+                    "hardworking": 113,
+                ],
+            ],
+            [
+                "year": 2017,
+                "week": 1,
+                "value_points": [
+                    "overall": 782,
+                    "brilliant": 442,
+                    "kind": 227,
+                    "hardworking": 113,
+                ],
+            ],
+        ]
+    ])
+}
+
 drop.get("/kudos") { req in
     return JSON([
         "meta": ["static": false],
