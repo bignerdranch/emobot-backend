@@ -19,6 +19,82 @@ drop.get { req in
     ])
 }
 
+drop.get("/leaderboard") { req in
+    return JSON([
+        "meta": ["static": true],
+        "data": [
+            "overall": [
+                [
+                    "rank": 1,
+                    "user": "caitlin",
+                    "points": 442,
+                ],
+                [
+                    "rank": 2,
+                    "user": "kristin",
+                    "points": 327,
+                    ],
+                [
+                    "rank": 3,
+                    "user": "jjustice",
+                    "points": 213,
+                ],
+            ],
+            "brilliant": [
+                [
+                    "rank": 1,
+                    "user": "kristin",
+                    "points": 142,
+                ],
+                [
+                    "rank": 2,
+                    "user": "caitlin",
+                    "points": 127,
+                ],
+                [
+                    "rank": 3,
+                    "user": "jjustice",
+                    "points": 113,
+                ],
+            ],
+            "kind": [
+                [
+                    "rank": 1,
+                    "user": "caitlin",
+                    "points": 142,
+                ],
+                [
+                    "rank": 2,
+                    "user": "kristin",
+                    "points": 127,
+                ],
+                [
+                    "rank": 3,
+                    "user": "jjustice",
+                    "points": 113,
+                ],
+            ],
+            "hardworking": [
+                [
+                    "rank": 1,
+                    "user": "jjustice",
+                    "points": 142,
+                ],
+                [
+                    "rank": 2,
+                    "user": "caitlin",
+                    "points": 127,
+                ],
+                [
+                    "rank": 3,
+                    "user": "kristin",
+                    "points": 113,
+                ],
+            ],
+        ]
+    ])
+}
+
 drop.get("/kudos") { req in
     return JSON([
         "meta": ["static": false],
