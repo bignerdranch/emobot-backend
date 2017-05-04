@@ -3,6 +3,12 @@ import HTTP
 import Models
 import Vapor
 
+#if os(Linux)
+    typealias Regex = RegularExpression
+#else
+    typealias Regex = NSRegularExpression
+#endif
+
 class Bot {
     let token: String
     let webClient: SlackWebClient
@@ -57,7 +63,7 @@ class Bot {
                         return
                     }
                     
-                    let kudoRegex = try NSRegularExpression(pattern: "(\\w+)\\+\\+\\s+(.*)")
+                    let kudoRegex = try Regex(pattern: "(\\w+)\\+\\+\\s+(.*)")
                     if let match = kudoRegex.actuallyUsableMatch(in: text) {
                         let toUser = match.captures[0]
                         let description = match.captures[1]
@@ -94,7 +100,7 @@ class Bot {
     }
 }
 
-extension NSRegularExpression {
+extension Regex {
     func actuallyUsableMatch(in string: String) -> (fullMatch: String, captures: [String])? {
         let nsString = string as NSString
         let range = NSMakeRange(0, nsString.length)
