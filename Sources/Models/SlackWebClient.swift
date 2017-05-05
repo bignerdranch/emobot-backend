@@ -39,12 +39,20 @@ public struct SlackWebClient {
     }
     
     public func getChannelName(forID channelID: String) throws -> String? {
-        let response = try sendRequest(for:"groups.info", query: ["channel": channelID])
-        guard let bytes = response.body.bytes else {
-            return nil
+        if channelID.hasPrefix("G") {
+            let response = try sendRequest(for:"groups.info", query: ["channel": channelID])
+            guard let json = response.json else {
+                return nil
+            }
+            return json["group", "name"]?.string
+        } else if channelID.hasPrefix("C") {
+            let response = try sendRequest(for:"channels.info", query: ["channel": channelID])
+            guard let json = response.json else {
+                return nil
+            }
+            return json["channel", "name"]?.string
         }
-        let json = try JSON(bytes: bytes)
-        return json["group", "name"]?.string
+        return nil
     }
     
     public func react(with emojiName: String, toMessageIn channelID: String, at timestamp: String) throws {
