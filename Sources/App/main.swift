@@ -134,7 +134,7 @@ drop.get("/leaderboard") { req in
     }
     
     return JSON([
-        "meta": ["static": true],
+        "meta": ["static": false],
         "data": try allResults.makeNode(),
     ])
 }
@@ -148,7 +148,7 @@ drop.get("users", String.self) { request, username in
     let receivedKudoJSONs = try receivedKudos.map { try convertKudoToJSON($0, users: users) }
     
     return JSON([
-        "meta": ["static": true],
+        "meta": ["static": false],
         "data": [
             "kudos": [
                 "sent": try sentKudoJSONs.makeNode(),
