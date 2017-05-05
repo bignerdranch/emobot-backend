@@ -7,6 +7,7 @@ let drop = Droplet()
 drop.preparations.append(Value.self)
 drop.preparations.append(Kudo.self)
 drop.preparations.append(Reaction.self)
+drop.preparations.append(Post.self)
 
 do {
     try drop.addProvider(VaporPostgreSQL.Provider.self)
@@ -15,6 +16,8 @@ do {
 }
 
 drop.middleware.insert(CORSMiddleware(), at: 0)
+
+drop.resource("posts", PostController())
 
 drop.post("db/seed") { req in
     try ValueSeeder.seed()
