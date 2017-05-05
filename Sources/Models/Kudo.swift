@@ -47,6 +47,27 @@ public final class Kudo: Model {
             "channel": channel,
         ])
     }
+    
+    public func toJSON() throws -> JSON {
+        var reactionCountsByValueSlug: [String: Int] = [:]
+        for (value, count) in try reactionCountsByValue() {
+            reactionCountsByValueSlug[value.slug] = count
+        }
+        
+        return try JSON(node: [
+            "from": [
+                "user_name": fromUser.makeNode(),
+                "avatar": "https://cdn.example.com/example_192.jpg",
+            ],
+            "to": [
+                "user_name": toUser.makeNode(),
+                "avatar": "https://cdn.example.com/example_192.jpg",
+            ],
+            "channel": channel.makeNode(),
+            "description": description.makeNode(),
+            "value_points": reactionCountsByValueSlug.makeNode(),
+        ])
+    }
 }
 
 public extension Kudo {

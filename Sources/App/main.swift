@@ -140,82 +140,18 @@ drop.get("/leaderboard") { req in
 }
 
 drop.get("users", String.self) { request, username in
+    let sentKudos = try Kudo.query().filter("from_user", username).all()
+    let receivedKudos = try Kudo.query().filter("to_user", username).all()
+    
+    let sentKudoJSONs = try sentKudos.map { try $0.toJSON() }
+    let receivedKudoJSONs = try receivedKudos.map { try $0.toJSON() }
+    
     return JSON([
         "meta": ["static": true],
         "data": [
             "kudos": [
-                "sent": [
-                    [
-                        "from": [
-                            "user_name": "caitlin",
-                            "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                        ],
-                        "to": [
-                            "user_name": "kristin",
-                            "avatar": "https://cdn.example.com/kristin_192.jpg",
-                        ],
-                        "channel": "caption-call-internal",
-                        "description": "great client call",
-                        "value_points": [
-                            "brilliant": 3,
-                            "kind": 1,
-                            "hardworking": 0,
-                        ]
-                    ],
-                    [
-                        "from": [
-                            "user_name": "caitlin",
-                            "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                        ],
-                        "to": [
-                            "user_name": "jjustice",
-                            "avatar": "https://cdn.example.com/jjustice_192.jpg",
-                        ],
-                        "channel": "caption-call-internal",
-                        "description": "great client call",
-                        "value_points": [
-                            "brilliant": 3,
-                            "kind": 1,
-                            "hardworking": 0,
-                        ]
-                    ],
-                ],
-                "received": [
-                    [
-                        "from": [
-                            "user_name": "kristin",
-                            "avatar": "https://cdn.example.com/kristin_192.jpg",
-                        ],
-                        "to": [
-                            "user_name": "caitlin",
-                            "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                        ],
-                        "channel": "caption-call-internal",
-                        "description": "great client call",
-                        "value_points": [
-                            "brilliant": 3,
-                            "kind": 1,
-                            "hardworking": 0,
-                        ]
-                    ],
-                    [
-                        "from": [
-                            "user_name": "jjustice",
-                            "avatar": "https://cdn.example.com/jjustice_192.jpg",
-                        ],
-                        "to": [
-                            "user_name": "caitlin",
-                            "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                        ],
-                        "channel": "caption-call-internal",
-                        "description": "great client call",
-                        "value_points": [
-                            "brilliant": 3,
-                            "kind": 1,
-                            "hardworking": 0,
-                        ]
-                    ],
-                ],
+                "sent": try sentKudoJSONs.makeNode(),
+                "received": try receivedKudoJSONs.makeNode(),
             ],
         ],
     ])
@@ -229,27 +165,7 @@ drop.get("values", String.self) { req, valueSlug in
     }
     
     let kudos = try value.reactions().map({ try $0.kudo() })
-    let kudoJSONs = try kudos.map({ (kudo: Kudo) -> JSON in
-        
-        var reactionCountsByValueSlug: [String: Int] = [:]
-        for (value, count) in try kudo.reactionCountsByValue() {
-            reactionCountsByValueSlug[value.slug] = count
-        }
-        
-        return try JSON(node: [
-            "from": [
-                "user_name": kudo.fromUser.makeNode(),
-                "avatar": "https://cdn.example.com/example_192.jpg",
-            ],
-            "to": [
-                "user_name": kudo.toUser.makeNode(),
-                "avatar": "https://cdn.example.com/example_192.jpg",
-            ],
-            "channel": kudo.channel.makeNode(),
-            "description": kudo.description.makeNode(),
-            "value_points": reactionCountsByValueSlug.makeNode(),
-        ])
-    })
+    let kudoJSONs = try kudos.map({ try $0.toJSON() })
     
     return JSON([
         "meta": ["static": false],
