@@ -2,7 +2,7 @@ import Fluent
 
 struct TestTableSetup: Preparation {
     static func prepare(_ database: Database) throws {
-        try database.create("posts2") { kudos in
+        try database.create("posts3") { kudos in
             kudos.id()
             kudos.string("from_user")
             kudos.string("to_user")
@@ -13,6 +13,6 @@ struct TestTableSetup: Preparation {
     }
     
     static func revert(_ database: Database) throws {
-        try database.delete("posts2")
+        try database.delete("posts3")
     }
 }
