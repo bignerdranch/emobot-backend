@@ -67,11 +67,6 @@ func convertKudoToJSON(_ kudo: Kudo, users: JSON?) throws -> JSON {
 }
 
 
-drop.post("db/seed") { req in
-    try ValueSeeder.seed()
-    return "OK"
-}
-
 drop.get { req in
     return try drop.view.make("welcome", [
     	"message": drop.localization[req.lang, "welcome", "title"]
