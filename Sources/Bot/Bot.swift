@@ -84,6 +84,8 @@ class Bot {
                     }
                 } catch {
                     print("Error: \(error)")
+                    let response = SlackMessage(to: channelID, text: "Error: \(error)")
+                    try ws.send(response)
                 }
             }
             
