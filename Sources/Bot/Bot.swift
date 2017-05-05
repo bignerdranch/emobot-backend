@@ -18,6 +18,28 @@ class Bot {
         self.webClient = SlackWebClient(token: token)
     }
     
+    let directKudoRegex = try! NSRegularExpression(pattern: "(\\w+)\\+\\+\\s+(.*)", options: [])
+    let atKudoRegex = try! NSRegularExpression(pattern: "<@(\\w+)>\\+\\+\\s+(.*)", options: [])
+    
+    private func findKudo(in text: String) throws -> (toUser: String, description: String)? {
+        // direct username
+        if let match = directKudoRegex.actuallyUsableMatch(in: text) {
+            let toUser = match.captures[0]
+            let description = match.captures[1]
+            return (toUser, description)
+        }
+        
+        // @ username
+        if let match = atKudoRegex.actuallyUsableMatch(in: text) {
+            let toUserID = match.captures[0]
+            let description = match.captures[1]
+            if let toUser = try webClient.getUserName(forID: toUserID) {
+                return (toUser, description)
+            }
+        }
+        return nil
+    }
+    
     func run() throws {
         let webSocketURL = try self.webSocketURL()
         try WebSocket.connect(to: webSocketURL) { ws in
@@ -48,10 +70,7 @@ class Bot {
                             return
                         }
                         
-                        let kudoRegex = try NSRegularExpression(pattern: "(\\w+)\\+\\+\\s+(.*)", options: [])
-                        if let match = kudoRegex.actuallyUsableMatch(in: text) {
-                            let toUser = match.captures[0]
-                            let description = match.captures[1]
+                        if let (toUser, description) = try self.findKudo(in: text) {
                             guard
                                 let channel = try self.webClient.getChannelName(forID: channelID),
                                 let fromUser = try self.webClient.getUserName(forID: fromUserID) else {
