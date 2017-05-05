@@ -26,30 +26,36 @@ let config = try Config(prioritized: [.commandLine,
 guard let token = config["slack", "token"]?.string else { throw AppError.missingConfig }
 let slackWebClient = SlackWebClient(token: token)
 
+var userAvatarCache: [String: String] = [:]
+
+func userAvatar(for userName: String, users: JSON?) -> String {
+    if let avatar = userAvatarCache[userName] {
+        return avatar
+    }
+    
+    if let users = users {
+        let memberArray = users["members"]?.array!
+        for member in memberArray! {
+            if let name = member.object?["name"]?.string, name == userName {
+                if let avatar = member.object?["profile"]?.object?["image_512"]?.string {
+                    userAvatarCache[userName] = avatar
+                    return avatar
+                }
+            }
+        }
+    }
+
+    return ""
+}
+
 func convertKudoToJSON(_ kudo: Kudo, users: JSON?) throws -> JSON {
     var reactionCountsByValueSlug: [String: Int] = [:]
     for (value, count) in try kudo.reactionCountsByValue() {
         reactionCountsByValueSlug[value.slug] = count
     }
     
-    var fromAvatar = ""
-    var toAvatar = ""
-    
-    if let users = users {
-        let memberArray = users["members"]?.array!
-        for member in memberArray! {
-            if let name = member.object?["name"]?.string, name == kudo.fromUser {
-                if let avatar = member.object?["profile"]?.object?["image_512"]?.string {
-                    fromAvatar = avatar
-                }
-            }
-            if let name = member.object?["name"]?.string, name == kudo.toUser {
-                if let avatar = member.object?["profile"]?.object?["image_512"]?.string {
-                    toAvatar = avatar
-                }
-            }
-        }
-    }
+    let fromAvatar = userAvatar(for: kudo.fromUser, users: users)
+    let toAvatar = userAvatar(for: kudo.toUser, users: users)
     
     return try JSON(node: [
         "from": [
@@ -80,16 +86,8 @@ func formatLeaderboardResults(_ results: Node, users: JSON) throws -> [JSON] {
     for (i, row) in overallResultsArray.enumerated() {
         let rowObject = row.object!
         
-        var avatar = ""
         let userName = rowObject["to_user"]!.string!
-        let memberArray = users["members"]?.array!
-        for member in memberArray! {
-            if let name = member.object?["name"]?.string, name == userName {
-                if let newAvatar = member.object?["profile"]?.object?["image_512"]?.string {
-                    avatar = newAvatar
-                }
-            }
-        }
+        let avatar = userAvatar(for: userName, users: users)
         
         let result = try JSON(node: [
             "rank": i + 1,
