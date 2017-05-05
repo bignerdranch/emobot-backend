@@ -172,7 +172,7 @@ drop.get("/leaderboard") { req in
                 [
                     "rank": 2,
                     "user": [
-                        "name": "caitlin",
+                        "user_name": "caitlin",
                         "avatar": "https://cdn.example.com/caitlin_192.jpg",
                     ],
                     "points": 97,
