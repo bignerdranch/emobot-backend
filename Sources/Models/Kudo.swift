@@ -10,19 +10,6 @@ public final class Kudo: Model {
     public var description: String
     public var channel: String
     
-    private static let dateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.calendar = Calendar(identifier: .iso8601)
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.timeZone = TimeZone(secondsFromGMT: 0)
-        f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        return f
-    }()
-    
-    private static func now() -> String {
-        return dateFormatter.string(from: Date())
-    }
-    
     public init(fromUser: String, toUser: String, description: String, channel: String) {
         self.fromUser = fromUser
         self.toUser = toUser
