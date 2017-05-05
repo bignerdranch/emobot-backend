@@ -9,12 +9,14 @@ public final class Kudo: Model {
     public var toUser: String
     public var description: String
     public var channel: String
+    public var timestamp: String
     
-    public init(fromUser: String, toUser: String, description: String, channel: String) {
+    public init(fromUser: String, toUser: String, description: String, channel: String, timestamp: String) {
         self.fromUser = fromUser
         self.toUser = toUser
         self.description = description
         self.channel = channel
+        self.timestamp = timestamp
     }
 
     public init(node: Node, in context: Context) throws {
@@ -23,6 +25,7 @@ public final class Kudo: Model {
         toUser = try node.extract("to_user")
         description = try node.extract("description")
         channel = try node.extract("channel")
+        timestamp = try node.extract("timestamp")
     }
 
     public func makeNode(context: Context) throws -> Node {
@@ -32,6 +35,7 @@ public final class Kudo: Model {
             "to_user": toUser,
             "description": description,
             "channel": channel,
+            "timestamp": timestamp,
         ])
     }
 }
@@ -59,6 +63,7 @@ extension Kudo: Preparation {
             kudos.string("to_user")
             kudos.string("description")
             kudos.string("channel")
+            kudos.string("timestamp")
         }
     }
 

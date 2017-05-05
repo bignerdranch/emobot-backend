@@ -28,49 +28,77 @@ class Bot {
                 
                 let event = try JSON(bytes: text.utf8.array)
                 guard
-                    let fromUserID = event["user"]?.string,
-                    let channelID = event["channel"]?.string,
-                    let text = event["text"]?.string
+                    let type = event["type"]?.string,
+                    let fromUserID = event["user"]?.string
                     else { return }
-                
+
+
                 do {
-                    if text.hasPrefix("hello") {
-                        let response = SlackMessage(to: channelID, text: "Hi there 👋")
-                        try ws.send(response)
-                        return
-                    } else if text.hasPrefix("version") {
-                        let response = SlackMessage(to: channelID, text: "Current Version: \(VERSION)")
-                        try ws.send(response)
-                        return
-                    }
-                    
-                    let kudoRegex = try NSRegularExpression(pattern: "(\\w+)\\+\\+\\s+(.*)", options: [])
-                    if let match = kudoRegex.actuallyUsableMatch(in: text) {
-                        let toUser = match.captures[0]
-                        let description = match.captures[1]
-                        guard
-                            let channel = try self.webClient.getChannelName(forID: channelID),
-                            let fromUser = try self.webClient.getUserName(forID: fromUserID) else {
-                                return
+                    if let text = event["text"]?.string,
+                        let channelID = event["channel"]?.string,
+                        let timestamp = event["ts"]?.string
+                    {
+                        if text.hasPrefix("hello") {
+                            let response = SlackMessage(to: channelID, text: "Hi there 👋")
+                            try ws.send(response)
+                            return
+                        } else if text.hasPrefix("version") {
+                            let response = SlackMessage(to: channelID, text: "Current Version: \(VERSION)")
+                            try ws.send(response)
+                            return
                         }
+                        
+                        let kudoRegex = try NSRegularExpression(pattern: "(\\w+)\\+\\+\\s+(.*)", options: [])
+                        if let match = kudoRegex.actuallyUsableMatch(in: text) {
+                            let toUser = match.captures[0]
+                            let description = match.captures[1]
+                            guard
+                                let channel = try self.webClient.getChannelName(forID: channelID),
+                                let fromUser = try self.webClient.getUserName(forID: fromUserID) else {
+                                    return
+                            }
 
-                        var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel)
-                        try kudo.save()
+                            var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel, timestamp: timestamp)
+                            try kudo.save()
 
-                        let values = try Value.all()
-                        for value in values where text.contains(":\(value.emojiAlphaCode):") {
-                            var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
-                            try reaction.save()
-
-                            if let timestamp = event["ts"]?.string {
+                            let values = try Value.all()
+                            for value in values where text.contains(":\(value.emojiAlphaCode):") {
+                                var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
+                                try reaction.save()
                                 try self.webClient.react(with: value.emojiAlphaCode, toMessageIn: channelID, at: timestamp)
                             }
                         }
                     }
+                    
+                    if type == "reaction_added" {
+                        guard
+                            let emojiAlphaCode = event["reaction"]?.string,
+                            let value = try Value.query().filter("emoji_alpha_code", emojiAlphaCode).first(),
+                            let fromUser = try self.webClient.getUserName(forID: fromUserID),
+                            !fromUser.contains("bot"), // TODO: make detecting own name better
+                            let item = event["item"]?.object,
+                            let channelID = item["channel"]?.string,
+                            let channel = try self.webClient.getChannelName(forID: channelID),
+                            let timestamp = item["ts"]?.string
+                            else
+                        {
+                                return
+                        }
+                        
+                        guard let kudo = try Kudo.query().filter("channel", channel).filter("timestamp", timestamp).first() else {
+                            print("Couldn't find kudo for channel \(channel), timestamp \(timestamp)")
+                            return
+                        }
+
+
+                        var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
+                        try reaction.save()
+                        
+                        let response = SlackMessage(to: channelID, text: "Recorded additional reaction of \(value.name) on \(kudo.description)")
+                        try ws.send(response)
+                    }
                 } catch {
                     print("Error: \(error)")
-                    let response = SlackMessage(to: channelID, text: "Error: \(error)")
-                    try ws.send(response)
                 }
             }
             
