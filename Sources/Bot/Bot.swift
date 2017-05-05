@@ -105,7 +105,12 @@ extension NSRegularExpression {
         let fullMatch = nsString.substring(with: match.range)
         var captures: [String] = []
         for i in 1 ..< match.numberOfRanges {
-            captures.append(nsString.substring(with: match.rangeAt(i)))
+            #if os(Linux)
+                let range = match.range(at: i)
+            #else
+                let range = match.rangeAt(i)
+            #endif
+            captures.append(nsString.substring(with: range))
         }
         return (fullMatch, captures)
     }
