@@ -8,7 +8,7 @@ import VaporPostgreSQL
 let config = try Config(prioritized: [.commandLine,
                                       .directory(root: workingDirectory + "Config/secrets"),
                                       .directory(root: workingDirectory + "Config/")])
-guard let token = config["bot", "token"]?.string else { throw BotError.missingConfig }
+guard let token = config["slack", "token"]?.string else { throw BotError.missingConfig }
 
 let dbProvider = try VaporPostgreSQL.Provider(config: config)
 let db = Database(dbProvider.driver)

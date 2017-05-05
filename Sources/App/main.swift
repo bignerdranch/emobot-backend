@@ -23,7 +23,7 @@ enum AppError: Error {
 let config = try Config(prioritized: [.commandLine,
                                       .directory(root: workingDirectory + "Config/secrets"),
                                       .directory(root: workingDirectory + "Config/")])
-guard let token = config["bot", "token"]?.string else { throw AppError.missingConfig }
+guard let token = config["slack", "token"]?.string else { throw AppError.missingConfig }
 let slackWebClient = SlackWebClient(token: token)
 
 func convertKudoToJSON(_ kudo: Kudo, users: JSON?) throws -> JSON {
