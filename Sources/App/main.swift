@@ -49,11 +49,6 @@ func userAvatar(for userName: String, users: JSON?) -> String {
 }
 
 func convertKudoToJSON(_ kudo: Kudo, users: JSON?) throws -> JSON {
-    var reactionCountsByValueSlug: [String: Int] = [:]
-    for (value, count) in try kudo.reactionCountsByValue() {
-        reactionCountsByValueSlug[value.slug] = count
-    }
-    
     let fromAvatar = userAvatar(for: kudo.fromUser, users: users)
     let toAvatar = userAvatar(for: kudo.toUser, users: users)
     
@@ -68,7 +63,7 @@ func convertKudoToJSON(_ kudo: Kudo, users: JSON?) throws -> JSON {
         ],
         "channel": kudo.channel.makeNode(),
         "description": kudo.description.makeNode(),
-        "value_points": reactionCountsByValueSlug.makeNode(),
+        "value_points": kudo.reactionCountsByValue().makeNode(),
     ])
 }
 

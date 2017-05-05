@@ -2,6 +2,11 @@ import Vapor
 import Fluent
 import Foundation
 
+enum KudoError: Error {
+    case databaseNotConfigured
+    case recordNotSaved
+}
+
 public final class Kudo: Model {
     public var exists = false
     public var id: Node?
@@ -45,11 +50,24 @@ public extension Kudo {
         return try children(nil, Reaction.self).all()
     }
     
-    func reactionCountsByValue() throws -> [Value: Int] {
-        let reactions = try self.reactions()
-        var reactionCountsByValue: [Value: Int] = [:]
-        for value in try Value.all() {
-            reactionCountsByValue[value] = reactions.filter({ $0.valueID == value.id }).count
+    func reactionCountsByValue() throws -> [String: Int] {
+        guard let pg = Kudo.database?.driver else {
+            throw KudoError.databaseNotConfigured
+        }
+        guard let id = id?.int else {
+            throw KudoError.recordNotSaved
+        }
+        let result: Node = try pg.raw("SELECT v.slug AS value, (SELECT COUNT(*) FROM kudos k JOIN reactions r ON k.id = r.kudo_id WHERE r.value_id = v.id AND k.id = $1) AS points FROM values v ORDER BY v.slug ASC", [id])
+        let resultArray = result.array!
+        
+        var reactionCountsByValue: [String: Int] = [:]
+        for row in resultArray {
+            if let rowObject = row.object,
+                let value = rowObject["value"]?.string,
+                let points = rowObject["points"]?.int
+            {
+                reactionCountsByValue[value] = points
+            }
         }
         return reactionCountsByValue
     }
