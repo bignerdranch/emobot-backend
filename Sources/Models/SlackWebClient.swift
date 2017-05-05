@@ -1,7 +1,7 @@
 import HTTP
 import JSON
 
-public struct SlackWebClient {
+public class SlackWebClient {
     
     let token: String
     
@@ -11,48 +11,65 @@ public struct SlackWebClient {
     
     private let baseURL = "https://slack.com/api"
 
+    private var channelNameCache: [String: String] = [:]
+    private var userNameCache: [String: String] = [:]
+    
+    // TODO: for demo performance. not a good idea to keep!
+    private var userCache: JSON?
+    
     private func url(for endpoint: String) -> String {
         return "\(baseURL)/\(endpoint)"
     }
     
     private func sendRequest(for endpoint: String, query: [String: CustomStringConvertible]) throws -> Response {
+        print("SENDING SLACK REQUEST: \(endpoint)")
         var fullQuery = query
         fullQuery["token"] = token
         return try BasicClient.get(url(for: endpoint), query: fullQuery)
     }
     
     public func getUserName(forID userID: String) throws -> String? {
-        let response = try sendRequest(for: "users.info", query: ["user": userID])
-        guard let bytes = response.body.bytes else {
-            return nil
+        if let name = userNameCache[userID] {
+            return name
         }
-        let json = try JSON(bytes: bytes)
-        return json["user", "name"]?.string
+
+        let response = try sendRequest(for: "users.info", query: ["user": userID])
+        let name = response.json?["user", "name"]?.string
+        userNameCache[userID] = name
+        return name
     }
     
     public func getUsers() throws -> JSON? {
-        let response = try sendRequest(for: "users.list", query: ["presence": false])
-        guard let bytes = response.body.bytes else {
-            return nil
+        if let users = userCache {
+            return users
         }
-        return try JSON(bytes: bytes)
+        
+        let response = try sendRequest(for: "users.list", query: ["presence": false])
+        
+        let users = response.json
+        userCache = users
+        return users
     }
     
     public func getChannelName(forID channelID: String) throws -> String? {
+        if let name = channelNameCache[channelID] {
+            return name
+        }
+        
+        var name: String?
         if channelID.hasPrefix("G") {
             let response = try sendRequest(for:"groups.info", query: ["channel": channelID])
-            guard let json = response.json else {
-                return nil
-            }
-            return json["group", "name"]?.string
+            name = response.json?["group", "name"]?.string
         } else if channelID.hasPrefix("C") {
             let response = try sendRequest(for:"channels.info", query: ["channel": channelID])
-            guard let json = response.json else {
-                return nil
-            }
-            return json["channel", "name"]?.string
+            name = response.json?["channel", "name"]?.string
         }
-        return nil
+        
+        if let name = name {
+            channelNameCache[channelID] = name
+        }
+        
+        return name
     }
     
     public func react(with emojiName: String, toMessageIn channelID: String, at timestamp: String) throws {
