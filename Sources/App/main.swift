@@ -217,13 +217,6 @@ drop.get("progress") { req in
     ])
 }
 
-drop.get("/kudos") { req in
-    return JSON([
-        "meta": ["static": false],
-        "data": try Kudo.all().makeNode(),
-    ])
-}
-
 drop.post("/kudos") { req in
     guard let json = req.json else { throw Abort.badRequest }
     var kudo = try Kudo(node: json)
@@ -238,48 +231,5 @@ drop.post("/reactions") { req in
     return reaction
 }
 
-drop.get("/kudos/stats/from") { req in
-    return JSON([
-        "meta": ["static": true],
-        "data": [
-            [
-                "from": "jjustice",
-                "value_points": [
-                    "brilliant": 3,
-                    "kind": 1,
-                    "hardworking": 0,
-                ]
-            ]
-        ]
-    ])
-}
-
-drop.get("/kudos/stats/to") { req in
-    return JSON([
-        "meta": ["static": true],
-        "data": [
-            [
-                "to": "jjustice",
-                "value_points": [
-                    "brilliant": 3,
-                    "kind": 1,
-                    "hardworking": 0,
-                ]
-            ]
-        ]
-        ])
-}
-
-drop.get("/kudos/stats/value") { req in
-    return JSON([
-        "meta": ["static": true],
-        "data": [
-            [
-                "value": "brilliance",
-                "points": 3,
-            ]
-        ]
-        ])
-}
 
 drop.run()
