@@ -78,115 +78,64 @@ drop.get { req in
     ])
 }
 
+func formatLeaderboardResults(_ results: Node, users: JSON) throws -> [JSON] {
+    let overallResultsArray: [Polymorphic] = results.array!
+    
+    var formattedOverallResults: [JSON] = []
+    for (i, row) in overallResultsArray.enumerated() {
+        let rowObject = row.object!
+        
+        var avatar = ""
+        let userName = rowObject["to_user"]!.string!
+        let memberArray = users["members"]?.array!
+        for member in memberArray! {
+            if let name = member.object?["name"]?.string, name == userName {
+                if let newAvatar = member.object?["profile"]?.object?["image_original"]?.string {
+                    avatar = newAvatar
+                }
+            }
+        }
+        
+        let result = try JSON(node: [
+            "rank": i + 1,
+            "user": try JSON(node: [
+                "user_name": userName,
+                "avatar": avatar,
+                ]),
+            "points": rowObject["points"]!.int!,
+            ])
+        formattedOverallResults.append(result)
+    }
+    return formattedOverallResults
+}
+
 drop.get("/leaderboard") { req in
+    guard let pg = drop.database?.driver as? PostgreSQLDriver else {
+        throw Abort.serverError
+    }
+    
+    guard let users = try slackWebClient.getUsers() else {
+        throw Abort.serverError
+    }
+    
+    var valueSlugs: [String] = try Value.all().map({ $0.slug })
+    valueSlugs.append("overall")
+    
+    var allResults: [String: Node] = [:]
+    for valueSlug in valueSlugs {
+        let results: Node
+        if valueSlug == "overall" {
+            results = try pg.raw("select k.to_user, count(*) as points from kudos k join reactions r on k.id = r.kudo_id group by k.to_user order by count(*) desc;")
+        } else {
+            results = try pg.raw("select k.to_user, count(*) as points from kudos k join reactions r on k.id = r.kudo_id join values v on r.value_id = v.id where v.slug = $1 group by k.to_user, v.name order by count(*) desc", [valueSlug])
+        }
+        let formattedResults = try formatLeaderboardResults(results, users: users)
+        allResults[valueSlug] = try formattedResults.makeNode()
+    }
+    
     return JSON([
         "meta": ["static": true],
-        "data": [
-            "overall": [
-                [
-                    "rank": 1,
-                    "user": [
-                        "user_name": "caitlin",
-                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                    ],
-                    "points": 442,
-                ],
-                [
-                    "rank": 2,
-                    "user": [
-                        "user_name": "kristin",
-                        "avatar": "https://cdn.example.com/kristin_192.jpg",
-                    ],
-                    "points": 327,
-                ],
-                [
-                    "rank": 3,
-                    "user": [
-                        "user_name": "jjustice",
-                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
-                    ],
-                    "points": 213,
-                ],
-            ],
-            "brilliant": [
-                [
-                    "rank": 1,
-                    "user": [
-                        "user_name": "kristin",
-                        "avatar": "https://cdn.example.com/kristin_192.jpg",
-                    ],
-                    "points": 142,
-                ],
-                [
-                    "rank": 2,
-                    "user": [
-                        "user_name": "caitlin",
-                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                    ],
-                    "points": 127,
-                ],
-                [
-                    "rank": 3,
-                    "user": [
-                        "user_name": "jjustice",
-                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
-                    ],
-                    "points": 113,
-                ],
-            ],
-            "kind": [
-                [
-                    "rank": 1,
-                    "user": [
-                        "user_name": "caitlin",
-                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                    ],
-                    "points": 217,
-                ],
-                [
-                    "rank": 2,
-                    "user": [
-                        "user_name": "kristin",
-                        "avatar": "https://cdn.example.com/kristin_192.jpg",
-                    ],
-                    "points": 118,
-                ],
-                [
-                    "rank": 3,
-                    "user": [
-                        "user_name": "jjustice",
-                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
-                    ],
-                    "points": 117,
-                ],
-            ],
-            "hardworking": [
-                [
-                    "rank": 1,
-                    "user": [
-                        "user_name": "jjustice",
-                        "avatar": "https://cdn.example.com/jjustice_192.jpg",
-                    ],
-                    "points": 101,
-                ],
-                [
-                    "rank": 2,
-                    "user": [
-                        "user_name": "caitlin",
-                        "avatar": "https://cdn.example.com/caitlin_192.jpg",
-                    ],
-                    "points": 97,
-                ],
-                [
-                    "rank": 3,
-                    "user": [
-                        "user_name": "kristin",
-                        "avatar": "https://cdn.example.com/kristin_192.jpg",
-                    ],
-                    "points": 88,
-                ],
-            ],
-        ]
+        "data": try allResults.makeNode(),
     ])
 }
 
