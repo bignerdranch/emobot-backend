@@ -34,7 +34,7 @@ class Bot {
     func run() throws {
         let webSocketURL = try self.webSocketURL()
         try WebSocket.connect(to: webSocketURL) { ws in
-            print("Connected to \(self.webSocketURL)")
+            print("Connected to \(webSocketURL)")
             
             ws.onText = { ws, text in
                 print("[event] - \(text)")
