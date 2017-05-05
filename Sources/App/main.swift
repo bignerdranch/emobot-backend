@@ -39,12 +39,12 @@ func convertKudoToJSON(_ kudo: Kudo, users: JSON?) throws -> JSON {
         let memberArray = users["members"]?.array!
         for member in memberArray! {
             if let name = member.object?["name"]?.string, name == kudo.fromUser {
-                if let avatar = member.object?["profile"]?.object?["image_original"]?.string {
+                if let avatar = member.object?["profile"]?.object?["image_512"]?.string {
                     fromAvatar = avatar
                 }
             }
             if let name = member.object?["name"]?.string, name == kudo.toUser {
-                if let avatar = member.object?["profile"]?.object?["image_original"]?.string {
+                if let avatar = member.object?["profile"]?.object?["image_512"]?.string {
                     toAvatar = avatar
                 }
             }
@@ -90,7 +90,7 @@ func formatLeaderboardResults(_ results: Node, users: JSON) throws -> [JSON] {
         let memberArray = users["members"]?.array!
         for member in memberArray! {
             if let name = member.object?["name"]?.string, name == userName {
-                if let newAvatar = member.object?["profile"]?.object?["image_original"]?.string {
+                if let newAvatar = member.object?["profile"]?.object?["image_512"]?.string {
                     avatar = newAvatar
                 }
             }
