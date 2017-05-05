@@ -16,6 +16,57 @@ do {
 
 drop.middleware.insert(CORSMiddleware(), at: 0)
 
+enum AppError: Error {
+    case missingConfig
+}
+
+let config = try Config(prioritized: [.commandLine,
+                                      .directory(root: workingDirectory + "Config/secrets"),
+                                      .directory(root: workingDirectory + "Config/")])
+guard let token = config["bot", "token"]?.string else { throw AppError.missingConfig }
+let slackWebClient = SlackWebClient(token: token)
+
+func convertKudoToJSON(_ kudo: Kudo, users: JSON?) throws -> JSON {
+    var reactionCountsByValueSlug: [String: Int] = [:]
+    for (value, count) in try kudo.reactionCountsByValue() {
+        reactionCountsByValueSlug[value.slug] = count
+    }
+    
+    var fromAvatar = ""
+    var toAvatar = ""
+    
+    if let users = users {
+        let memberArray = users["members"]?.array!
+        for member in memberArray! {
+            if let name = member.object?["name"]?.string, name == kudo.fromUser {
+                if let avatar = member.object?["profile"]?.object?["image_original"]?.string {
+                    fromAvatar = avatar
+                }
+            }
+            if let name = member.object?["name"]?.string, name == kudo.toUser {
+                if let avatar = member.object?["profile"]?.object?["image_original"]?.string {
+                    toAvatar = avatar
+                }
+            }
+        }
+    }
+    
+    return try JSON(node: [
+        "from": [
+            "user_name": kudo.fromUser.makeNode(),
+            "avatar": fromAvatar.makeNode()
+        ],
+        "to": [
+            "user_name": kudo.toUser.makeNode(),
+            "avatar": toAvatar.makeNode()
+        ],
+        "channel": kudo.channel.makeNode(),
+        "description": kudo.description.makeNode(),
+        "value_points": reactionCountsByValueSlug.makeNode(),
+    ])
+}
+
+
 drop.post("db/seed") { req in
     try ValueSeeder.seed()
     return "OK"
@@ -143,8 +194,9 @@ drop.get("users", String.self) { request, username in
     let sentKudos = try Kudo.query().filter("from_user", username).all()
     let receivedKudos = try Kudo.query().filter("to_user", username).all()
     
-    let sentKudoJSONs = try sentKudos.map { try $0.toJSON() }
-    let receivedKudoJSONs = try receivedKudos.map { try $0.toJSON() }
+    let users = try slackWebClient.getUsers()
+    let sentKudoJSONs = try sentKudos.map { try convertKudoToJSON($0, users: users) }
+    let receivedKudoJSONs = try receivedKudos.map { try convertKudoToJSON($0, users: users) }
     
     return JSON([
         "meta": ["static": true],
@@ -158,14 +210,13 @@ drop.get("users", String.self) { request, username in
 }
 
 drop.get("values", String.self) { req, valueSlug in
-    // TODO: create a slug field
-    // TODO: dynamic profile image field
     guard let value = try Value.query().filter("slug", valueSlug).first() else {
         return "KUDO NOT FOUND"
     }
     
+    let users = try slackWebClient.getUsers()
     let kudos = try value.reactions().map({ try $0.kudo() })
-    let kudoJSONs = try kudos.map({ try $0.toJSON() })
+    let kudoJSONs = try kudos.map({ try convertKudoToJSON($0, users: users) })
     
     return JSON([
         "meta": ["static": false],

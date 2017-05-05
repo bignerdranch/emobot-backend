@@ -1,9 +1,13 @@
 import HTTP
 import JSON
 
-struct SlackWebClient {
+public struct SlackWebClient {
     
     let token: String
+    
+    public init(token: String) {
+        self.token = token
+    }
     
     private let baseURL = "https://slack.com/api"
 
@@ -17,7 +21,7 @@ struct SlackWebClient {
         return try BasicClient.get(url(for: endpoint), query: fullQuery)
     }
     
-    func getUserName(forID userID: String) throws -> String? {
+    public func getUserName(forID userID: String) throws -> String? {
         let response = try sendRequest(for: "users.info", query: ["user": userID])
         guard let bytes = response.body.bytes else {
             return nil
@@ -26,7 +30,15 @@ struct SlackWebClient {
         return json["user", "name"]?.string
     }
     
-    func getChannelName(forID channelID: String) throws -> String? {
+    public func getUsers() throws -> JSON? {
+        let response = try sendRequest(for: "users.list", query: ["presence": false])
+        guard let bytes = response.body.bytes else {
+            return nil
+        }
+        return try JSON(bytes: bytes)
+    }
+    
+    public func getChannelName(forID channelID: String) throws -> String? {
         let response = try sendRequest(for:"groups.info", query: ["channel": channelID])
         guard let bytes = response.body.bytes else {
             return nil
