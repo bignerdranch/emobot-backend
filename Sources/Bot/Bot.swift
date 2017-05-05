@@ -39,14 +39,14 @@ class Bot {
             ws.onText = { ws, text in
                 print("[event] - \(text)")
                 
+                let event = try JSON(bytes: text.utf8.array)
+                guard
+                    let fromUserID = event["user"]?.string,
+                    let channelID = event["channel"]?.string,
+                    let text = event["text"]?.string
+                    else { return }
+                
                 do {
-                    let event = try JSON(bytes: text.utf8.array)
-                    guard
-                        let fromUserID = event["user"]?.string,
-                        let channelID = event["channel"]?.string,
-                        let text = event["text"]?.string
-                        else { return }
-
                     if text.hasPrefix("hello") {
                         let response = SlackMessage(to: channelID, text: "Hi there 👋")
                         try ws.send(response)
