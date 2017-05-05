@@ -8,13 +8,11 @@ public final class Reaction: Model {
     public var kudoID: Node?
     public var valueID: Node?
     public var fromUser: String
-    public var dateSent: String
     
-    public init(kudoID: Node? = nil, valueID: Node? = nil, fromUser: String, dateSent: String) {
+    public init(kudoID: Node? = nil, valueID: Node? = nil, fromUser: String) {
         self.kudoID = kudoID
         self.valueID = valueID
         self.fromUser = fromUser
-        self.dateSent = dateSent
     }
     
     public init(node: Node, in context: Context) throws {
@@ -22,7 +20,6 @@ public final class Reaction: Model {
         kudoID = try node.extract("kudo_id")
         valueID = try node.extract("value_id")
         fromUser = try node.extract("from_user")
-        dateSent = try node.extract("date_sent")
     }
     
     public func makeNode(context: Context) throws -> Node {
@@ -31,7 +28,6 @@ public final class Reaction: Model {
             "kudo_id": kudoID,
             "value_id": valueID,
             "from_user": fromUser,
-            "date_sent": dateSent,
         ])
     }
 }
@@ -59,7 +55,6 @@ extension Reaction: Preparation {
             kudos.parent(Kudo.self, optional: false)
             kudos.parent(Value.self, optional: false)
             kudos.string("from_user")
-            kudos.string("date_sent")
         }
     }
     

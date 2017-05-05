@@ -7,19 +7,6 @@ class Bot {
     let token: String
     let webClient: SlackWebClient
     
-    private let dateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.calendar = Calendar(identifier: .iso8601)
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.timeZone = TimeZone(secondsFromGMT: 0)
-        f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        return f
-    }()
-    
-    private func now() -> String {
-        return dateFormatter.string(from: Date())
-    }
-    
     private func webSocketURL() throws -> String {
         let rtmResponse = try BasicClient.loadRealtimeApi(token: token)
         guard let webSocketURL = rtmResponse.data["url"]?.string else { throw BotError.invalidResponse }
@@ -67,7 +54,7 @@ class Bot {
                                 return
                         }
 
-                        var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel, dateSent: self.now())
+                        var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel)
                         try kudo.save()
                         
                         /*

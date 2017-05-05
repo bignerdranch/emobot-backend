@@ -9,7 +9,6 @@ public final class Kudo: Model {
     public var toUser: String
     public var description: String
     public var channel: String
-    public var dateSent: String
     
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -24,12 +23,11 @@ public final class Kudo: Model {
         return dateFormatter.string(from: Date())
     }
     
-    public init(fromUser: String, toUser: String, description: String, channel: String, dateSent: String) {
+    public init(fromUser: String, toUser: String, description: String, channel: String) {
         self.fromUser = fromUser
         self.toUser = toUser
         self.description = description
         self.channel = channel
-        self.dateSent = dateSent
     }
 
     public init(node: Node, in context: Context) throws {
@@ -38,7 +36,6 @@ public final class Kudo: Model {
         toUser = try node.extract("to_user")
         description = try node.extract("description")
         channel = try node.extract("channel")
-        dateSent = try node.extract("date_sent")
     }
 
     public func makeNode(context: Context) throws -> Node {
@@ -48,7 +45,6 @@ public final class Kudo: Model {
             "to_user": toUser,
             "description": description,
             "channel": channel,
-            "date_sent": dateSent,
         ])
     }
 }
@@ -76,7 +72,6 @@ extension Kudo: Preparation {
             kudos.string("to_user")
             kudos.string("description")
             kudos.string("channel")
-            kudos.string("date_sent")
         }
     }
 
