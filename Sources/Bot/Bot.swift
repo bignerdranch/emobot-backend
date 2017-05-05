@@ -93,12 +93,9 @@ class Bot {
                             return
                         }
 
-
                         var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
                         try reaction.save()
-                        
-                        let response = SlackMessage(to: channelID, text: "Recorded additional reaction of \(value.name) on \(kudo.description)")
-                        try ws.send(response)
+                        print("Recorded additional reaction of \(value.name) on \(kudo.description)")
                     }
                 } catch {
                     print("Error: \(error)")
