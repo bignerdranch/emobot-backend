@@ -60,16 +60,6 @@ class Bot {
                         let channelID = event["channel"]?.string,
                         let timestamp = event["ts"]?.string
                     {
-                        if text.hasPrefix("hello") {
-                            let response = SlackMessage(to: channelID, text: "Hi there 👋")
-                            try ws.send(response)
-                            return
-                        } else if text.hasPrefix("version") {
-                            let response = SlackMessage(to: channelID, text: "Current Version: \(VERSION)")
-                            try ws.send(response)
-                            return
-                        }
-                        
                         if let (toUser, description) = try self.findKudo(in: text) {
                             guard
                                 let channel = try self.webClient.getChannelName(forID: channelID),
