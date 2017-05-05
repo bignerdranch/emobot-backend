@@ -38,7 +38,7 @@ public final class Kudo: Model {
         toUser = try node.extract("to_user")
         description = try node.extract("description")
         channel = try node.extract("channel")
-        dateSent = Kudo.now()
+        dateSent = try node.extract("date_sent")
     }
 
     public func makeNode(context: Context) throws -> Node {
