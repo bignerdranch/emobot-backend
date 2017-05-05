@@ -8,6 +8,7 @@ drop.preparations.append(Value.self)
 drop.preparations.append(Kudo.self)
 drop.preparations.append(Reaction.self)
 drop.preparations.append(Post.self)
+drop.preparations.append(TestTableSetup.self)
 
 do {
     try drop.addProvider(VaporPostgreSQL.Provider.self)

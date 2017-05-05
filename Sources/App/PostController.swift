@@ -29,7 +29,8 @@ final class PostController: ResourceRepresentable {
     func update(request: Request, post: Post) throws -> ResponseRepresentable {
         let new = try request.post()
         var post = post
-        post.content = new.content
+        // TODO actually set fields
+//        post.content = new.content
         try post.save()
         return post
     }
