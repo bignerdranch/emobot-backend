@@ -90,12 +90,15 @@ drop.get("/leaderboard") { req in
                         "user_name": "caitlin",
                         "avatar": "https://cdn.example.com/caitlin_192.jpg",
                     ],
-                    "points": 142,
+                    "points": 217,
                 ],
                 [
                     "rank": 2,
-                    "user": "kristin",
-                    "points": 127,
+                    "user": [
+                        "user_name": "kristin",
+                        "avatar": "https://cdn.example.com/kristin_192.jpg",
+                    ],
+                    "points": 118,
                 ],
                 [
                     "rank": 3,
@@ -103,7 +106,7 @@ drop.get("/leaderboard") { req in
                         "user_name": "jjustice",
                         "avatar": "https://cdn.example.com/jjustice_192.jpg",
                     ],
-                    "points": 113,
+                    "points": 117,
                 ],
             ],
             "hardworking": [
@@ -113,7 +116,7 @@ drop.get("/leaderboard") { req in
                         "user_name": "jjustice",
                         "avatar": "https://cdn.example.com/jjustice_192.jpg",
                     ],
-                    "points": 142,
+                    "points": 101,
                 ],
                 [
                     "rank": 2,
@@ -121,7 +124,7 @@ drop.get("/leaderboard") { req in
                         "name": "caitlin",
                         "avatar": "https://cdn.example.com/caitlin_192.jpg",
                     ],
-                    "points": 127,
+                    "points": 97,
                 ],
                 [
                     "rank": 3,
@@ -129,7 +132,7 @@ drop.get("/leaderboard") { req in
                         "user_name": "kristin",
                         "avatar": "https://cdn.example.com/kristin_192.jpg",
                     ],
-                    "points": 113,
+                    "points": 88,
                 ],
             ],
         ]
