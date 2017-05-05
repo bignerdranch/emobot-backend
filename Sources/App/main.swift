@@ -1,3 +1,4 @@
+import Foundation
 import Models
 import Vapor
 import VaporPostgreSQL
@@ -302,6 +303,13 @@ drop.get("/kudos") { req in
         "meta": ["static": false],
         "data": try Kudo.all().makeNode(),
     ])
+}
+
+drop.post("/kudos") { req in
+    guard let json = req.json else { throw Abort.badRequest }
+    var kudo = try Kudo(node: json)
+    try kudo.save()
+    return kudo
 }
 
 drop.get("/kudos/stats/from") { req in

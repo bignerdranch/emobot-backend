@@ -11,6 +11,19 @@ public final class Kudo: Model {
     public var channel: String
     public var dateSent: String
     
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .iso8601)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.timeZone = TimeZone(secondsFromGMT: 0)
+        f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        return f
+    }()
+    
+    private static func now() -> String {
+        return dateFormatter.string(from: Date())
+    }
+    
     public init(fromUser: String, toUser: String, description: String, channel: String, dateSent: String) {
         self.fromUser = fromUser
         self.toUser = toUser
@@ -25,7 +38,7 @@ public final class Kudo: Model {
         toUser = try node.extract("to_user")
         description = try node.extract("description")
         channel = try node.extract("channel")
-        dateSent = try node.extract("date_sent")
+        dateSent = Kudo.now()
     }
 
     public func makeNode(context: Context) throws -> Node {
