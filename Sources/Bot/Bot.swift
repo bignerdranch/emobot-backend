@@ -91,7 +91,7 @@ class Bot {
                     
                     if type == "reaction_added" {
                         // handles if multiple emoji are sent in the reaction, e.g. skin tones
-                        let alphaCodeRegex = try NSRegularExpression(pattern: "([-_a-zA-Z]+)")
+                        let alphaCodeRegex = try NSRegularExpression(pattern: "([-_a-zA-Z]+)", options: [])
                         guard
                             let emojiAlphaCode = event["reaction"]?.string,
                             let emojiMatch = alphaCodeRegex.actuallyUsableMatch(in: emojiAlphaCode),
