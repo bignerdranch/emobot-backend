@@ -67,6 +67,7 @@ class Bot {
                                 return
                         }
 
+                        /*
                         var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel, dateSent: self.now())
                         try kudo.save()
                         
@@ -77,7 +78,7 @@ class Bot {
                         } else {
                             print("Kind value not found")
                         }
-                        
+                        */
                         
                         let response = SlackMessage(to: channelID, text: "\(fromUser) sent kudos to \(toUser) in \(channel): \(description)")
                         try ws.send(response)
