@@ -71,9 +71,12 @@ class Bot {
                     }
                     
                     if type == "reaction_added" {
+                        // handles if multiple emoji are sent in the reaction, e.g. skin tones
+                        let alphaCodeRegex = try NSRegularExpression(pattern: "([-_a-zA-Z]+)")
                         guard
                             let emojiAlphaCode = event["reaction"]?.string,
-                            let value = try Value.query().filter("emoji_alpha_code", emojiAlphaCode).first(),
+                            let emojiMatch = alphaCodeRegex.actuallyUsableMatch(in: emojiAlphaCode),
+                            let value = try Value.query().filter("emoji_alpha_code", emojiMatch.captures[0]).first(),
                             let fromUser = try self.webClient.getUserName(forID: fromUserID),
                             !fromUser.contains("bot"), // TODO: make detecting own name better
                             let item = event["item"]?.object,
@@ -82,7 +85,7 @@ class Bot {
                             let timestamp = item["ts"]?.string
                             else
                         {
-                                return
+                            return
                         }
                         
                         guard let kudo = try Kudo.query().filter("channel", channel).filter("timestamp", timestamp).first() else {
