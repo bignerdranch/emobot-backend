@@ -98,7 +98,7 @@ extension NSRegularExpression {
     func actuallyUsableMatch(in string: String) -> (fullMatch: String, captures: [String])? {
         let nsString = NSString(string: string)
         let range = NSMakeRange(0, nsString.length)
-        guard let match = firstMatch(in: string, range: range) else {
+        guard let match = firstMatch(in: string, options: [], range: range) else {
             return nil
         }
         
