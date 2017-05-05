@@ -46,4 +46,9 @@ public struct SlackWebClient {
         let json = try JSON(bytes: bytes)
         return json["group", "name"]?.string
     }
+    
+    public func react(with emojiName: String, toMessageIn channelID: String, at timestamp: String) throws {
+        let query = ["name": emojiName, "channel": channelID, "timestamp": timestamp]
+        _ = try sendRequest(for: "reactions.add", query: query)
+    }
 }

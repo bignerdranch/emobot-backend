@@ -56,16 +56,15 @@ class Bot {
 
                         var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel)
                         try kudo.save()
-                        let response = SlackMessage(to: channelID, text: "\(fromUser) sent kudos to \(toUser) in \(channel): \(description)")
-                        try ws.send(response)
 
                         let values = try Value.all()
                         for value in values where text.contains(":\(value.emojiAlphaCode):") {
                             var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
                             try reaction.save()
 
-                            let response = SlackMessage(to: channelID, text: "Recorded \(value.name) reaction from \(fromUser)")
-                            try ws.send(response)
+                            if let timestamp = event["ts"]?.string {
+                                try self.webClient.react(with: value.emojiAlphaCode, toMessageIn: channelID, at: timestamp)
+                            }
                         }
                     }
                 } catch {
