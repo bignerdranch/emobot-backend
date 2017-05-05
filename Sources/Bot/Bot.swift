@@ -67,10 +67,10 @@ class Bot {
                                 return
                         }
 
-                        /*
                         var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel, dateSent: self.now())
                         try kudo.save()
                         
+                        /*
                         // TODO: detect which value, instead of hard-coding to kindness
                         if let kind = try Value.query().filter("name", "Kind").first() {
                             var reaction = Reaction(kudoID: kudo.id, valueID: kind.id, fromUser: fromUser, dateSent: self.now())
