@@ -56,17 +56,17 @@ class Bot {
 
                         var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel)
                         try kudo.save()
-                        
-                        // TODO: detect which value, instead of hard-coding to kindness
-                        if let kind = try Value.query().filter("name", "Kind").first() {
-                            var reaction = Reaction(kudoID: kudo.id, valueID: kind.id, fromUser: fromUser)
-                            try reaction.save()
-                        } else {
-                            print("Kind value not found")
-                        }
-                        
                         let response = SlackMessage(to: channelID, text: "\(fromUser) sent kudos to \(toUser) in \(channel): \(description)")
                         try ws.send(response)
+
+                        let values = try Value.all()
+                        for value in values where text.contains(":\(value.emojiAlphaCode):") {
+                            var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
+                            try reaction.save()
+
+                            let response = SlackMessage(to: channelID, text: "Recorded \(value.name) reaction from \(fromUser)")
+                            try ws.send(response)
+                        }
                     }
                 } catch {
                     print("Error: \(error)")
