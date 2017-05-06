@@ -142,6 +142,10 @@ drop.get("/leaderboard") { req in
 }
 
 drop.get("users", String.self) { request, username in
+    guard let pg = drop.database?.driver as? PostgreSQLDriver else {
+        throw Abort.serverError
+    }
+    
     let sentKudos = try Kudo.query().filter("from_user", username).all()
     let receivedKudos = try Kudo.query().filter("to_user", username).all()
     
@@ -149,12 +153,38 @@ drop.get("users", String.self) { request, username in
     let sentKudoJSONs = try sentKudos.map { try convertKudoToJSON($0, users: users) }
     let receivedKudoJSONs = try receivedKudos.map { try convertKudoToJSON($0, users: users) }
     
+    let totalSentResults = try pg.raw("SELECT 'overall' AS value, COUNT(*) AS points FROM reactions r WHERE r.from_user = $1 UNION SELECT v.slug AS value, COUNT(*) AS points FROM kudos k JOIN reactions r ON k.id = r.kudo_id JOIN values v ON r.value_id = v.id WHERE r.from_user = $1 GROUP BY v.slug", [username])
+    var totalSent: [String: Int] = [:]
+    for row in totalSentResults.array! {
+        if let valueSlug = row.object?["value"]?.string,
+            let points = row.object?["points"]?.int
+        {
+            totalSent[valueSlug] = points
+        }
+    }
+    
+    let totalReceivedResults = try pg.raw("SELECT 'overall' AS value, COUNT(*) AS points FROM reactions r JOIN kudos k ON r.kudo_id = k.id WHERE k.to_user = $1 UNION SELECT v.slug AS value, COUNT(*) AS points FROM kudos k JOIN reactions r ON k.id = r.kudo_id JOIN values v ON r.value_id = v.id WHERE k.to_user = $1 GROUP BY v.slug", [username])
+    var totalReceived: [String: Int] = [:]
+    for row in totalReceivedResults.array! {
+        if let valueSlug = row.object?["value"]?.string,
+            let points = row.object?["points"]?.int
+        {
+            totalReceived[valueSlug] = points
+        }
+    }
+    
     return JSON([
         "meta": ["static": false],
         "data": [
             "kudos": [
-                "sent": try sentKudoJSONs.makeNode(),
-                "received": try receivedKudoJSONs.makeNode(),
+                "sent": [
+                    "totals": try totalSent.makeNode(),
+                    "kudos": try sentKudoJSONs.makeNode(),
+                ],
+                "received": [
+                    "totals": try totalReceived.makeNode(),
+                    "kudos": try receivedKudoJSONs.makeNode(),
+                ],
             ],
         ],
     ])
