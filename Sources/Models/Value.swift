@@ -54,7 +54,7 @@ public extension Value {
             preconditionFailure("Attempted to get kudos for an unsaved value")
         }
         return try Kudo.query()
-            .union(Reaction.self)
+            .union(Reaction.self, localKey: "id", foreignKey: "kudo_id")
             .filter(Reaction.self, "value_id", .equals, id).all()
     }
 }
