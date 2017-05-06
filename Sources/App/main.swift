@@ -196,7 +196,7 @@ drop.get("values", String.self) { req, valueSlug in
     }
     
     let users = try slackWebClient.getUsers()
-    let kudos = try value.kudos()
+    let kudos = try value.kudos().prefix(50)
     let kudoJSONs = try kudos.map({ try convertKudoToJSON($0, users: users) })
     
     let emojiJSONs = try value.emoji().map({ emoji -> JSON in
