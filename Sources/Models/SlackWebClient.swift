@@ -75,7 +75,7 @@ public class SlackWebClient {
     public func sendMessage(to channelID: String, text: String, inReplyToMessageWithTimestamp threadTS: String? = nil, attachments: [[String: String]]) throws {
         let attachmentJSON = try JSON(node: attachments.map({ try JSON(node: $0) }))
         let attachmentString = try attachmentJSON.makeBytes().string()
-        var query = ["channel": channelID, "text": text, "attachments": attachmentString]
+        var query = ["channel": channelID, "text": text, "as_user": "true", "attachments": attachmentString]
         if let threadTS = threadTS {
             query["thread_ts"] = threadTS
         }
