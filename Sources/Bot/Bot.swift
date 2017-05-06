@@ -70,6 +70,11 @@ class Bot {
                             var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel, timestamp: timestamp)
                             try kudo.save()
 
+                            // TODO: make URL configurable
+                            let url = "https://stickybandits.github.io/emobot-frontend/pages/profile.html?user=\(toUser)"
+                            let attachments = [["title": "See \(toUser)'s Nerd Cred", "title_link": url]]
+                            try self.webClient.sendMessage(to: channelID, text: "\(toUser) got some Nerd Cred!", attachments: attachments)
+                            
                             let values = try Value.all()
                             for value in values where text.contains(":\(value.emojiAlphaCode):") {
                                 var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
