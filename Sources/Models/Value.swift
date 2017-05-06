@@ -48,6 +48,15 @@ public extension Value {
     func reactions() throws -> [Reaction] {
         return try children(nil, Reaction.self).all()
     }
+    
+    func kudos() throws -> [Kudo] {
+        guard let id = id?.int else {
+            preconditionFailure("Attempted to get kudos for an unsaved value")
+        }
+        return try Kudo.query()
+            .union(Reaction.self)
+            .filter(Reaction.self, "value_id", .equals, id).all()
+    }
 }
 
 extension Value: Preparation {
