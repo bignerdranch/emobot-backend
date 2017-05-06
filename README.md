@@ -1,15 +1,43 @@
-# Basic Template
+# Emobot Backend
 
-A basic vapor template for starting a new Vapor web application. If you're using vapor toolbox, you can use: `vapor new --template=basic`
+Slack bot and API for Nerd Cred.
 
-## 📖 Documentation
+## Installation
 
-Visit the Vapor web framework's [documentation](http://docs.vapor.codes) for instructions on how to use this package.
+- Install [Vapor Toolbox](https://vapor.github.io/documentation/getting-started/install-toolbox.html) and [Postgres](https://www.postgresql.org/download/).
+- [Create a new bot user](https://my.slack.com/services/new/bot) in your Slack team account and write down the token.
+- Add configuration files:
 
-## 💧 Community
+**config/secrets/postgresql.json**
 
-Join the welcoming community of fellow Vapor developers in [slack](http://vapor.team).
+```json
+{
+    "host": "127.0.0.1",
+    "port": 5432,
+    "user": "postgres",
+    "password": "",
+    "database": "your_database_name_here"
+}
+```
 
-## 🔧 Compatibility
+**config/secrets/slack.json**
 
-This package has been tested on macOS and Ubuntu.
+```json
+{
+    "token": "YOUR_SLACK_TOKEN_HERE"
+}
+```
+
+- Run `vapor xcode -y`
+- Prepare the database by either:
+    1. Running the `App` target (running the `Bot` target won't populate the database).
+    2. Running `vapor build && vapor run prepare` from the command line
+- If you like, populate your database with sample data using [emobot-seeder](https://github.com/stickybandits/emobot-seeder).
+
+## Usage
+- From within Xcode, select the `App` or `Bot` project and run.
+- Invite your bot to one or more Slack channels.
+
+## Notes
+
+- If you're planning on deploying to Linux (and you are) be aware that the Swift Foundation APIs on Linux aren't currently identical to Mac. You may want to run in [Vagrant](https://www.vagrantup.com/) or [Docker](https://github.com/vapor-community/docker) to be able to test builds in Ubuntu locally.
