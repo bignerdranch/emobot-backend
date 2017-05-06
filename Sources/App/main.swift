@@ -122,9 +122,22 @@ drop.get("/leaderboard") { req in
         allResults[valueSlug] = try formattedResults.makeNode()
     }
     
+    let totalsResults = try pg.raw("SELECT 'overall' AS value, COUNT(*) AS points FROM reactions AS points UNION SELECT v.slug AS value, COUNT(*) AS points FROM kudos k JOIN reactions r ON k.id = r.kudo_id JOIN values v ON r.value_id = v.id GROUP BY v.slug")
+    var totals: [String: Int] = [:]
+    for row in totalsResults.array! {
+        if let valueSlug = row.object?["value"]?.string,
+            let points = row.object?["points"]?.int
+        {
+            totals[valueSlug] = points
+        }
+    }
+    
     return JSON([
         "meta": ["static": false],
-        "data": try allResults.makeNode(),
+        "data": [
+            "totals": try totals.makeNode(),
+            "kudos": try allResults.makeNode(),
+        ]
     ])
 }
 
