@@ -15,6 +15,7 @@ let db = Database(dbProvider.driver)
 Kudo.database = db
 Reaction.database = db
 Value.database = db
+Emoji.database = db
 
 let bot = Bot(token: token)
 try bot.run()

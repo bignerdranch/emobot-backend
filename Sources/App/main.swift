@@ -5,6 +5,7 @@ import VaporPostgreSQL
 
 let drop = Droplet()
 drop.preparations.append(Value.self)
+drop.preparations.append(Emoji.self)
 drop.preparations.append(Kudo.self)
 drop.preparations.append(Reaction.self)
 
@@ -155,13 +156,19 @@ drop.get("values", String.self) { req, valueSlug in
     let kudos = try value.reactions().map({ try $0.kudo() })
     let kudoJSONs = try kudos.map({ try convertKudoToJSON($0, users: users) })
     
+    let emojiJSONs = try value.emoji().map({ emoji -> JSON in
+        return try JSON(node: [
+            "character": emoji.character,
+            "alpha_code": emoji.alphaCode,
+        ])
+    })
+    
     return JSON([
         "meta": ["static": false],
         "data": [
             "name": value.name.makeNode(),
             "slug": value.slug.makeNode(),
-            "emoji_character": value.emojiCharacter.makeNode(),
-            "emoji_alpha_code": value.emojiAlphaCode.makeNode(),
+            "emoji": try emojiJSONs.makeNode(),
             "kudos": try kudoJSONs.makeNode(),
         ],
     ])

@@ -76,10 +76,12 @@ class Bot {
                             try self.webClient.sendMessage(to: channelID, text: "\(toUser) got some Nerd Cred!", attachments: attachments)
                             
                             let values = try Value.all()
-                            for value in values where text.contains(":\(value.emojiAlphaCode):") {
-                                var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
-                                try reaction.save()
-                                try self.webClient.react(with: value.emojiAlphaCode, toMessageIn: channelID, at: timestamp)
+                            for value in values {
+                                if let emoji = try value.emoji().first(where: { emoji in text.contains(":\(emoji.alphaCode):") }) {
+                                    var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
+                                    try reaction.save()
+                                    try self.webClient.react(with: emoji.alphaCode, toMessageIn: channelID, at: timestamp)
+                                }
                             }
                         }
                     }
@@ -90,7 +92,7 @@ class Bot {
                         guard
                             let emojiAlphaCode = event["reaction"]?.string,
                             let emojiMatch = alphaCodeRegex.actuallyUsableMatch(in: emojiAlphaCode),
-                            let value = try Value.query().filter("emoji_alpha_code", emojiMatch.captures[0]).first(),
+                            let emojiModel = try Emoji.query().filter("alpha_code", emojiMatch.captures[0]).first(),
                             let fromUser = try self.webClient.getUserName(forID: fromUserID),
                             !fromUser.contains("bot"), // TODO: make detecting own name better
                             let item = event["item"]?.object,
@@ -107,6 +109,7 @@ class Bot {
                             return
                         }
 
+                        let value = try emojiModel.value()
                         var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
                         try reaction.save()
                         print("Recorded additional reaction of \(value.name) on \(kudo.description)")
