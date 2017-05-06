@@ -55,7 +55,9 @@ public extension Value {
         }
         return try Kudo.query()
             .union(Reaction.self, localKey: "id", foreignKey: "kudo_id")
-            .filter(Reaction.self, "value_id", .equals, id).all()
+            .filter(Reaction.self, "value_id", .equals, id)
+            .sort("id", .descending)
+            .all()
     }
 }
 

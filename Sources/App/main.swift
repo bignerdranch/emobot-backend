@@ -146,8 +146,8 @@ drop.get("users", String.self) { request, username in
         throw Abort.serverError
     }
     
-    let sentKudos = try Kudo.query().filter("from_user", username).all()
-    let receivedKudos = try Kudo.query().filter("to_user", username).all()
+    let sentKudos = try Kudo.query().filter("from_user", username).sort("id", .descending).all()
+    let receivedKudos = try Kudo.query().filter("to_user", username).sort("id", .descending).all()
     
     let users = try slackWebClient.getUsers()
     let sentKudoJSONs = try sentKudos.map { try convertKudoToJSON($0, users: users) }
