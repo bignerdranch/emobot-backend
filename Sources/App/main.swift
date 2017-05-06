@@ -76,10 +76,10 @@ drop.get { req in
 }
 
 func formatLeaderboardResults(_ results: Node, users: JSON) throws -> [JSON] {
-    let overallResultsArray: [Polymorphic] = results.array!
+    let resultsArray: [Polymorphic] = results.array!
     
-    var formattedOverallResults: [JSON] = []
-    for (i, row) in overallResultsArray.enumerated() {
+    var formattedResults: [JSON] = []
+    for (i, row) in resultsArray.enumerated() {
         let rowObject = row.object!
         
         let userName = rowObject["to_user"]!.string!
@@ -93,9 +93,9 @@ func formatLeaderboardResults(_ results: Node, users: JSON) throws -> [JSON] {
                 ]),
             "points": rowObject["points"]!.int!,
             ])
-        formattedOverallResults.append(result)
+        formattedResults.append(result)
     }
-    return formattedOverallResults
+    return formattedResults
 }
 
 drop.get("/leaderboard") { req in
