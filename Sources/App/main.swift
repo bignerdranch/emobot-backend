@@ -114,9 +114,9 @@ drop.get("/leaderboard") { req in
     for valueSlug in valueSlugs {
         let results: Node
         if valueSlug == "overall" {
-            results = try pg.raw("select k.to_user, count(*) as points from kudos k join reactions r on k.id = r.kudo_id group by k.to_user order by count(*) desc;")
+            results = try pg.raw("select k.to_user, count(*) as points from kudos k join reactions r on k.id = r.kudo_id group by k.to_user order by count(*) desc limit 10")
         } else {
-            results = try pg.raw("select k.to_user, count(*) as points from kudos k join reactions r on k.id = r.kudo_id join values v on r.value_id = v.id where v.slug = $1 group by k.to_user, v.name order by count(*) desc", [valueSlug])
+            results = try pg.raw("select k.to_user, count(*) as points from kudos k join reactions r on k.id = r.kudo_id join values v on r.value_id = v.id where v.slug = $1 group by k.to_user, v.name order by count(*) desc limit 10", [valueSlug])
         }
         let formattedResults = try formatLeaderboardResults(results, users: users)
         allResults[valueSlug] = try formattedResults.makeNode()
