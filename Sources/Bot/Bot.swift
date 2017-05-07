@@ -70,18 +70,23 @@ class Bot {
                             var kudo = Kudo(fromUser: fromUser, toUser: toUser, description: description, channel: channel, timestamp: timestamp)
                             try kudo.save()
 
-                            // TODO: make URL configurable
-                            let url = "https://stickybandits.github.io/nerd-cred/pages/profile.html?user=\(toUser)"
-                            let attachments = [["title": "\(toUser) got some Nerd Cred!", "title_link": url]]
-                            try self.webClient.sendMessage(to: channelID, text: "", attachments: attachments)
+                            var anyValuesFound = false
                             
                             let values = try Value.all()
                             for value in values {
                                 if let emoji = try value.emoji().first(where: { emoji in text.contains(":\(emoji.alphaCode):") }) {
+                                    anyValuesFound = true
                                     var reaction = Reaction(kudoID: kudo.id, valueID: value.id, fromUser: fromUser)
                                     try reaction.save()
                                     try self.webClient.react(with: emoji.alphaCode, toMessageIn: channelID, at: timestamp)
                                 }
+                            }
+                            
+                            if anyValuesFound {
+                                // TODO: make URL configurable
+                                let url = "https://stickybandits.github.io/nerd-cred/pages/profile.html?user=\(toUser)"
+                                let attachments = [["title": "\(toUser) got some Nerd Cred!", "title_link": url]]
+                                try self.webClient.sendMessage(to: channelID, text: "", attachments: attachments)
                             }
                         }
                     }
