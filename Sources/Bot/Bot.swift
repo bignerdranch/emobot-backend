@@ -4,6 +4,11 @@ import Models
 import Vapor
 
 class Bot {
+    
+    private enum Constants {
+        static let frontendBaseURL = "https://bignerdranch.github.io/nerd-cred/pages"
+    }
+    
     let token: String
     let webClient: SlackWebClient
     
@@ -83,8 +88,7 @@ class Bot {
                             }
                             
                             if anyValuesFound {
-                                // TODO: make URL configurable
-                                let url = "https://stickybandits.github.io/nerd-cred/pages/profile.html?user=\(toUser)"
+                                let url = "\(Constants.frontendBaseURL)/profile.html?user=\(toUser)"
                                 let attachments = [["title": "\(toUser) got some Nerd Cred!", "title_link": url]]
                                 try self.webClient.sendMessage(to: channelID, text: "", attachments: attachments)
                             }
